@@ -1,0 +1,111 @@
+---
+title: "Launch"
+description: "Configure App.axaml and MainWindow to use SukiUI's theme and SukiWindow."
+---
+
+<Steps>
+  <Step title="Add SukiTheme to App.axaml">
+    Open `App.axaml` and add the `SukiUI` XML namespace, then replace any existing theme entry (such as `FluentTheme`) with `SukiTheme` inside `Application.Styles`.
+
+    <Tabs>
+      <Tab title="AXAML">
+        ```xml App.axaml
+        <Application
+            ...
+            xmlns:sukiUi="clr-namespace:SukiUI;assembly=SukiUI"> <!-- [!code ++] -->
+            <Application.Styles>
+                <FluentTheme /> <!-- [!code --] -->
+                <sukiUi:SukiTheme ThemeColor="Blue" /> <!-- [!code ++] -->
+            </Application.Styles>
+        </Application>
+        ```
+      </Tab>
+    </Tabs>
+
+    <Warning>
+      If `ThemeColor` is not set and you do not configure the theme color by any other means, your window and many controls will be completely transparent. Always set a default `ThemeColor`.
+    </Warning>
+  </Step>
+
+  <Step title="Set the locale (optional)">
+    Some built-in Avalonia controls display text (for example, the default `TextBox` context menu). SukiUI defaults to English, but you can change the locale by setting the `Locale` property on `SukiTheme`.
+
+    <Tabs>
+      <Tab title="AXAML">
+        ```xml App.axaml
+        <Application
+            ...
+            xmlns:sukiUi="clr-namespace:SukiUI;assembly=SukiUI">
+            <Application.Styles>
+                <sukiUi:SukiTheme ThemeColor="Blue" Locale="zh-CN" /> <!-- [!code ++] -->
+            </Application.Styles>
+        </Application>
+        ```
+      </Tab>
+    </Tabs>
+
+    <Note>
+      Supported locales: `en-US` (default), `zh-CN`, `nl-NL`, `pt-PT`, `de-DE`, `es-ES`, `fr-FR`, `it-IT`, `ru-RU`, `ja-JP`. Unsupported locale tags fall back to English.
+    </Note>
+  </Step>
+
+  <Step title="Convert MainWindow to SukiWindow">
+    SukiUI provides `SukiWindow`, a custom window class with the library's title bar, background effects, and styling. Replace the base `Window` class in both the AXAML markup and the C# code-behind.
+
+    <Tabs>
+      <Tab title="AXAML">
+        ```xml MainWindow.axaml
+        <Window <!-- [!code --] -->
+        <sukiUi:SukiWindow <!-- [!code ++] -->
+            x:Class="SukiTest.MainWindow"
+            xmlns="https://github.com/avaloniaui"
+            xmlns:sukiUi="clr-namespace:SukiUI.Controls;assembly=SukiUI" <!-- [!code ++] -->
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        </Window> <!-- [!code --] -->
+        </sukiUi:SukiWindow> <!-- [!code ++] -->
+        ```
+      </Tab>
+      <Tab title="C#">
+        ```csharp MainWindow.axaml.cs
+        using Avalonia.Controls; // [!code --]
+        using SukiUI.Controls; // [!code ++] 
+
+        namespace SukiTest;
+
+        public partial class MainWindow : Window // [!code --]
+        public partial class MainWindow : SukiWindow // [!code ++]
+        {
+            public MainWindow()
+            {
+                InitializeComponent();
+            }
+        }
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+If you encounter any of the following exceptions after completing the setup, there is a known version-compatibility issue between Avalonia and SukiUI:
+
+- `SukiWindow` not found
+- `System.MissingMethodException: Method not found`
+- `Unable to resolve type SukiTheme from namespace clr-namespace:SukiUI;assembly=SukiUI`
+
+<Warning>
+  **Two options to resolve version mismatch errors:**
+
+  1. Adjust the version of `Avalonia` or `SukiUI` (upgrade or downgrade) until the exception is resolved.
+  2. While keeping Avalonia up to date (beta), reference the build `.dll` directly from [GitHub Actions](https://github.com/kikipoulet/SukiUI/actions/workflows/build.yml) instead of NuGet, following the steps on the [Installation](/getting-started/installation) page.
+</Warning>
+
+## Next steps
+
+Your app is ready to use SukiUI. Explore the following pages to continue:
+
+- **[Theming](/theming/overview)** — Customize colors, dark/light mode, and appearance.
+- **[SukiWindow](/controls/layout/sukiwindow)** — Learn about the window's built-in features and options.

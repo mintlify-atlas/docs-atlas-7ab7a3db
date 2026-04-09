@@ -1,0 +1,161 @@
+---
+title: "Button"
+description: "SukiUI provides a rich set of button styles and modifiers, including filled, outlined, semantic color variants, icon support, and a loading/busy state."
+---
+
+SukiUI styles the standard AvaloniaUI `Button` (and `RepeatButton`) through a set of CSS-style class names. All variants support the `Accent` color modifier and the `Rounded` shape modifier.
+
+## Style variants
+
+<Tabs>
+  <Tab title="Standard">
+    The default button uses the theme's primary color for its border and text, with a subtle hover highlight.
+
+    ```xml
+    <Button Content="Button" />
+    ```
+  </Tab>
+  <Tab title="Flat">
+    A filled button using the primary color as the background. Drops the border and adds a subtle shadow.
+
+    ```xml
+    <Button Classes="Flat" Content="Button" />
+    ```
+  </Tab>
+  <Tab title="Outlined">
+    A transparent button with a primary-colored border. On hover the fill transitions to the primary color.
+
+    ```xml
+    <Button Classes="Outlined" Content="Button" />
+    ```
+  </Tab>
+  <Tab title="Basic">
+    A minimal, borderless button. Scales slightly on hover instead of changing color.
+
+    ```xml
+    <Button Classes="Basic" Content="Button" />
+    ```
+  </Tab>
+  <Tab title="Discrete">
+    Similar to Standard but uses the card background color, making it blend into card surfaces.
+
+    ```xml
+    <Button Classes="Discrete" Content="Button" />
+    ```
+  </Tab>
+  <Tab title="Void">
+    A completely transparent, borderless, zero-padding button. Useful for wrapping custom content.
+
+    ```xml
+    <Button Classes="Void" Content="Button" />
+    ```
+  </Tab>
+</Tabs>
+
+## Accent color modifier
+
+Append `Accent` to any base class to switch from the primary theme color to the accent color.
+
+```xml
+<!-- Flat button using the accent color -->
+<Button Classes="Flat Accent" Content="Button" />
+
+<!-- Outlined button using the accent color -->
+<Button Classes="Outlined Accent" Content="Button" />
+
+<!-- Basic button using the accent color -->
+<Button Classes="Basic Accent" Content="Button" />
+```
+
+## Semantic color variants
+
+SukiUI provides four semantic color classes that replace the primary color entirely. All four follow the same filled style as `Flat`.
+
+```xml
+<Button Classes="Success"     Content="Saved" />
+<Button Classes="Information" Content="Info" />
+<Button Classes="Warning"     Content="Warning" />
+<Button Classes="Danger"      Content="Delete" />
+```
+
+## Size modifiers
+
+```xml
+<!-- Smaller padding and font size -->
+<Button Classes="Small" Content="Small" />
+
+<!-- Larger corner radius, font size, and padding -->
+<Button Classes="Large Flat" Content="Large" />
+
+<!-- Large + pill-shaped corners -->
+<Button Classes="Large Flat Rounded" Content="Large Rounded" />
+```
+
+The `Rounded` modifier sets `CornerRadius="100"` and can be combined with any other class.
+
+## Icon support
+
+Use `theme:ButtonExtensions.Icon` to place an icon to the left of the button label. When combined with the `Icon` class the button becomes a circular icon-only button (40×40 px).
+
+```xml
+xmlns:suki="https://github.com/kikipoulet/SukiUI"
+
+<!-- Icon alongside text -->
+<Button Classes="Flat" Content="Calendar">
+    <suki:ButtonExtensions.Icon>
+        <PathIcon Data="{x:Static suki:Icons.Calendar}" />
+    </suki:ButtonExtensions.Icon>
+</Button>
+
+<!-- Circular icon-only button -->
+<Button Classes="Outlined Icon">
+    <PathIcon Data="{x:Static suki:Icons.Star}" />
+</Button>
+```
+
+## Loading / busy state
+
+Setting `theme:ButtonExtensions.ShowProgress="True"` displays an animated circular progress indicator inside the button. The indicator width animates in and out smoothly.
+
+```xml
+xmlns:suki="https://github.com/kikipoulet/SukiUI"
+
+<Button x:Name="MyButton"
+        Classes="Flat"
+        Content="Save"
+        suki:ButtonExtensions.ShowProgress="False" />
+```
+
+You can also control the state from C# using the extension methods:
+
+```csharp
+// Show the spinner
+MyButton.ShowProgress();
+
+// Hide the spinner
+MyButton.HideProgress();
+```
+
+<Note>
+`ShowProgress` / `HideProgress` are extension methods on `Button` defined in `SukiUI.Theme.ButtonExtensions`. Add `using SukiUI.Theme;` to your code-behind file.
+</Note>
+
+## NoPressedAnimation modifier
+
+By default buttons scale down slightly when pressed. Add `NoPressedAnimation` to disable this behavior, which is useful when the button hosts complex animated content.
+
+```xml
+<Button Classes="Flat NoPressedAnimation" Content="No scale" />
+```
+
+## RepeatButton
+
+All styles and modifiers above apply equally to `RepeatButton`:
+
+```xml
+<RepeatButton Classes="Flat Accent" Content="Hold me" />
+```
+
+## See also
+
+[Demo source — SukiUI.Demo/Features/ControlsLibrary/ButtonsView.axaml](https://github.com/kikipoulet/SukiUI/blob/main/SukiUI.Demo/Features/ControlsLibrary/ButtonsView.axaml)

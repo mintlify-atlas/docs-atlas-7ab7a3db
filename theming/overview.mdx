@@ -1,0 +1,88 @@
+---
+title: "Theming overview"
+description: "Learn how to use SukiTheme to control light/dark mode, color themes, and backgrounds in your AvaloniaUI application."
+---
+
+SukiUI's theming system is built around the `SukiTheme` class, which acts as the central controller for all visual appearance in your application. It integrates with AvaloniaUI's [Theme Variant](https://docs.avaloniaui.net/docs/guides/styles-and-resources/how-to-use-theme-variants) system and extends it with color theme management and background rendering.
+
+## Setting up SukiTheme
+
+Before using any theming APIs, declare `SukiTheme` in your `App.axaml` inside `Application.Styles`:
+
+```xml App.axaml
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sukiUi="clr-namespace:SukiUI;assembly=SukiUI"
+             RequestedThemeVariant="Default">
+    <Application.Styles>
+        <sukiUi:SukiTheme ThemeColor="Blue" />
+    </Application.Styles>
+</Application>
+```
+
+The `ThemeColor` attribute sets the initial color theme on startup. The default value is `Blue`.
+
+## Getting the SukiTheme instance
+
+All runtime theming changes are made through the `SukiTheme` singleton, retrieved via:
+
+```csharp
+SukiTheme theme = SukiTheme.GetInstance();
+```
+
+This locates the `SukiTheme` instance registered in `Application.Styles`. If no `SukiTheme` has been declared, an `InvalidOperationException` is thrown.
+
+If you need to target a specific application instance (for example in multi-window scenarios), use the overload:
+
+```csharp
+SukiTheme theme = SukiTheme.GetInstance(myApp);
+```
+
+## Switching between light and dark mode
+
+SukiUI wraps AvaloniaUI's `ThemeVariant` system to make switching straightforward.
+
+**Toggle between light and dark:**
+
+```csharp
+SukiTheme.GetInstance().SwitchBaseTheme();
+```
+
+**Switch to a specific variant:**
+
+```csharp
+SukiTheme.GetInstance().ChangeBaseTheme(ThemeVariant.Dark);
+SukiTheme.GetInstance().ChangeBaseTheme(ThemeVariant.Light);
+```
+
+**React to base theme changes:**
+
+```csharp
+SukiTheme.GetInstance().OnBaseThemeChanged += variant =>
+{
+    Console.WriteLine($"Theme changed to: {variant}");
+};
+```
+
+The currently active variant is available on `SukiTheme.GetInstance().ActiveBaseTheme`.
+
+## Right-to-left support
+
+Set `IsRightToLeft="True"` on `SukiTheme` in `App.axaml` to enable right-to-left flow direction for all controls:
+
+```xml App.axaml
+<sukiUi:SukiTheme ThemeColor="Blue" IsRightToLeft="True" />
+```
+
+This sets the `FlowDirectionPrimary` resource to `RightToLeft` throughout the application.
+
+## What's next
+
+<CardGroup cols={2}>
+  <Card title="Color themes" icon="palette" href="/theming/color-themes">
+    Switch between built-in color themes like Blue, Red, Green, and Orange, or define your own custom colors using `SukiColorTheme`.
+  </Card>
+  <Card title="Backgrounds" icon="image" href="/theming/backgrounds">
+    Use GPU-accelerated shader backgrounds with built-in styles like Gradient and Bubble, or write your own SKSL shaders.
+  </Card>
+</CardGroup>

@@ -1,0 +1,161 @@
+---
+title: "InfoBar & InfoBadge"
+description: "Display inline status messages with InfoBar and attach count or status indicators to other controls with InfoBadge."
+---
+
+<Tabs>
+  <Tab title="InfoBar">
+    `InfoBar` is an inline notification banner that displays a title, a message, and a severity-appropriate icon. It can be closed by the user or controlled programmatically via `IsOpen`.
+
+    ## Basic usage
+
+    ```xml
+    <suki:InfoBar
+        Title="Update available"
+        Message="Version 2.0 is ready to install."
+        Severity="Information"
+        IsClosable="True"
+        IsOpen="{Binding IsInfoBarOpen, Mode=TwoWay}" />
+    ```
+
+    ## Properties
+
+    | Property | Type | Default | Description |
+    |----------|------|---------|-------------|
+    | `Title` | `string` | `""` | Bold heading displayed at the top of the bar. |
+    | `Message` | `string` | `""` | Body text displayed below the title. |
+    | `Severity` | `NotificationType` | `Information` | Controls the icon and accent colour. |
+    | `IsOpen` | `bool` | `true` | Shows or hides the bar. Bind two-way to track close events. |
+    | `IsClosable` | `bool` | `true` | Shows a close button in the top-right corner when `true`. |
+    | `IsOpaque` | `bool` | `false` | Renders a solid background instead of a translucent one. |
+    | `IsTextSelectable` | `bool` | `false` | Allows the user to select and copy the message text. |
+    | `TitleOrientation` | `Orientation` | `Horizontal` | Controls whether title and message are laid out horizontally or vertically. |
+
+    ## Severity levels
+
+    Use the `Severity` property to reflect the nature of the message. Each value applies a distinct icon and foreground colour:
+
+    ```xml
+    <!-- Information — blue icon -->
+    <suki:InfoBar
+        Title="Info"
+        Message="Your session expires in 10 minutes."
+        Severity="Information" />
+
+    <!-- Success — green icon -->
+    <suki:InfoBar
+        Title="Saved"
+        Message="Your changes have been saved successfully."
+        Severity="Success" />
+
+    <!-- Warning — amber icon -->
+    <suki:InfoBar
+        Title="Warning"
+        Message="Low disk space detected on drive C:."
+        Severity="Warning" />
+
+    <!-- Error — red icon -->
+    <suki:InfoBar
+        Title="Error"
+        Message="Failed to connect to the database."
+        Severity="Error" />
+    ```
+
+    ## Closable InfoBar
+
+    When `IsClosable="True"` (the default), a close button is rendered at the top right. Clicking it sets `IsOpen` to `false`. Bind `IsOpen` two-way to react to this in your ViewModel:
+
+    ```xml
+    <suki:InfoBar
+        Title="Reminder"
+        Message="Don't forget to save your work."
+        Severity="Warning"
+        IsClosable="True"
+        IsOpen="{Binding ShowReminder, Mode=TwoWay}" />
+    ```
+
+    ## Custom content
+
+    `InfoBar` is a `ContentControl`. Any control placed as its content is rendered below the message area:
+
+    ```xml
+    <suki:InfoBar
+        Title="Download ready"
+        Message="The file has been processed."
+        Severity="Success">
+        <Button Content="Open file" Classes="Flat Accent" />
+    </suki:InfoBar>
+    ```
+  </Tab>
+  <Tab title="InfoBadge">
+    `InfoBadge` is a small overlay badge that attaches to another control to indicate a count, status, or notification. It is a `HeaderedContentControl` — the primary control is set as `Content` and the badge sits in the corner determined by `CornerPosition`.
+
+    ## Basic usage
+
+    ```xml
+    <suki:InfoBadge Appearance="Error">
+        <suki:InfoBadge.Header>
+            <!-- Badge content: a count or icon -->
+            <TextBlock Text="3" />
+        </suki:InfoBadge.Header>
+        <!-- The control being decorated -->
+        <Button Content="Notifications" />
+    </suki:InfoBadge>
+    ```
+
+    ## Dot mode
+
+    Set `IsDot="True"` to render a small coloured dot instead of content, useful as a simple "has new items" indicator:
+
+    ```xml
+    <suki:InfoBadge Appearance="Success" IsDot="True">
+        <Button Content="Messages" />
+    </suki:InfoBadge>
+    ```
+
+    ## Overflow
+
+    The `Overflow` property caps the displayed count. When the `Header` value exceeds `Overflow`, the badge displays `{Overflow}+` instead:
+
+    ```xml
+    <suki:InfoBadge Appearance="Error" Overflow="99">
+        <suki:InfoBadge.Header>
+            <TextBlock Text="{Binding UnreadCount}" />
+        </suki:InfoBadge.Header>
+        <Button Content="Inbox" />
+    </suki:InfoBadge>
+    ```
+
+    ## Properties
+
+    | Property | Type | Default | Description |
+    |----------|------|---------|-------------|
+    | `Appearance` | `NotificationType` | `Information` | Controls the badge background colour. |
+    | `CornerPosition` | `CornerPosition` | `TopRight` | Which corner of the content the badge is anchored to. |
+    | `IsDot` | `bool` | `false` | Renders a small dot instead of showing the header content. |
+    | `Overflow` | `int` | `0` | Maximum value to display before appending `+`. `0` disables overflow capping. |
+
+    ## Appearance values
+
+    | Value | Colour |
+    |-------|--------|
+    | `Information` | Blue |
+    | `Success` | Green |
+    | `Warning` | Amber |
+    | `Error` | Red |
+
+    ## Corner positions
+
+    ```xml
+    <!-- Top-right (default) -->
+    <suki:InfoBadge CornerPosition="TopRight" Appearance="Error" IsDot="True">
+        <PathIcon Data="{StaticResource BellIcon}" />
+    </suki:InfoBadge>
+
+    <!-- Bottom-left -->
+    <suki:InfoBadge CornerPosition="BottomLeft" Appearance="Success" IsDot="True">
+        <PathIcon Data="{StaticResource UserIcon}" />
+    </suki:InfoBadge>
+    ```
+  </Tab>
+</Tabs>

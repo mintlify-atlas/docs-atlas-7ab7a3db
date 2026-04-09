@@ -1,0 +1,87 @@
+---
+title: "TabControl"
+description: "SukiUI's styled TabControl for displaying multiple content panels with selectable tab headers."
+---
+
+SukiUI provides a fully themed `TabControl` that integrates with the SukiUI design system. It presents a collection of `TabItem` controls with styled tab headers and smooth content transitions.
+
+## Example
+
+```xml
+<TabControl>
+    <TabItem Header="Overview">
+        <TextBlock Text="Overview content goes here." Margin="16" />
+    </TabItem>
+    <TabItem Header="Details">
+        <TextBlock Text="Details content goes here." Margin="16" />
+    </TabItem>
+    <TabItem Header="History">
+        <TextBlock Text="History content goes here." Margin="16" />
+    </TabItem>
+</TabControl>
+```
+
+## Tab Strip Placement
+
+The `TabStripPlacement` property controls which edge of the control the tab headers are rendered on. The default is `Top`.
+
+```xml
+<!-- Tabs at the top (default) -->
+<TabControl TabStripPlacement="Top">
+    <TabItem Header="Tab 1"><!-- Content --></TabItem>
+    <TabItem Header="Tab 2"><!-- Content --></TabItem>
+</TabControl>
+
+<!-- Tabs at the bottom -->
+<TabControl TabStripPlacement="Bottom">
+    <TabItem Header="Tab 1"><!-- Content --></TabItem>
+    <TabItem Header="Tab 2"><!-- Content --></TabItem>
+</TabControl>
+
+<!-- Tabs on the left -->
+<TabControl TabStripPlacement="Left">
+    <TabItem Header="Tab 1"><!-- Content --></TabItem>
+    <TabItem Header="Tab 2"><!-- Content --></TabItem>
+</TabControl>
+```
+
+<Tip>
+When using `TabStripPlacement="Left"` or `"Right"`, consider setting a fixed width on the `TabControl` or using `HorizontalAlignment="Stretch"` so the tab strip and content area share the space correctly.
+</Tip>
+
+## Using with a GlassCard
+
+Wrapping a `TabControl` in a `GlassCard` is a common pattern in SukiUI to give the tabbed panel the library's signature frosted-glass appearance:
+
+```xml
+<GlassCard Padding="0">
+    <TabControl>
+        <TabItem Header="Summary">
+            <TextBlock Text="Summary" Margin="16" />
+        </TabItem>
+        <TabItem Header="Raw Data">
+            <TextBlock Text="Raw Data" Margin="16" />
+        </TabItem>
+    </TabControl>
+</GlassCard>
+```
+
+## Data Binding
+
+Populate tabs dynamically using `ItemsSource` and `ItemTemplate`:
+
+```xml
+<TabControl ItemsSource="{Binding Tabs}">
+    <TabControl.ItemTemplate>
+        <DataTemplate>
+            <TabItem Header="{Binding Title}">
+                <ContentControl Content="{Binding Content}" />
+            </TabItem>
+        </DataTemplate>
+    </TabControl.ItemTemplate>
+</TabControl>
+```
+
+## See Also
+
+- [Demo: ControlsLibrary/TabControl/TabControlView.axaml](https://github.com/kikipoulet/SukiUI/blob/main/SukiUI.Demo/Features/ControlsLibrary/TabControl/TabControlView.axaml)

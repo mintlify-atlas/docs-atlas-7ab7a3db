@@ -1,0 +1,115 @@
+---
+title: "Color themes"
+description: "Switch between SukiUI's built-in color themes or create your own custom color themes using SukiColorTheme."
+---
+
+SukiUI ships with four built-in color themes and a system for registering custom ones. Each color theme defines a primary color and an accent color, which propagate into resource keys used throughout all SukiUI controls and background shaders.
+
+## Built-in colors
+
+The `SukiColor` enum lists all built-in themes:
+
+| Value | Primary | Accent |
+|-------|---------|--------|
+| `SukiColor.Blue` | `#0A59F7` | `#F7A80A` |
+| `SukiColor.Red` | `#D03A2F` | `#2FC5D0` |
+| `SukiColor.Green` | `#537834` | `#B24DB0` |
+| `SukiColor.Orange` | `#d48806` | `#176CE8` |
+
+`Blue` is the default when `ThemeColor` is not specified in `App.axaml`.
+
+## Switching color themes
+
+**Cycle to the next available theme** (wraps around the full list):
+
+```csharp
+SukiTheme.GetInstance().SwitchColorTheme();
+```
+
+**Switch to a specific built-in color:**
+
+```csharp
+SukiTheme.GetInstance().ChangeColorTheme(SukiColor.Red);
+```
+
+**Switch to a specific `SukiColorTheme` object** (works for both built-in and custom themes):
+
+```csharp
+SukiColorTheme myTheme = ...; // obtained from ColorThemes list or created yourself
+SukiTheme.GetInstance().ChangeColorTheme(myTheme);
+```
+
+## Reacting to color theme changes
+
+Subscribe to `OnColorThemeChanged` to be notified whenever the active color theme is switched:
+
+```csharp
+SukiTheme.GetInstance().OnColorThemeChanged += theme =>
+{
+    Console.WriteLine($"Color theme changed to: {theme.DisplayName}");
+};
+```
+
+The current theme is also always available at:
+
+```csharp
+SukiColorTheme active = SukiTheme.GetInstance().ActiveColorTheme;
+```
+
+## Creating a custom color theme
+
+You can define any color combination by constructing a `SukiColorTheme` directly. The constructor takes a display name, a primary `Color`, and an accent `Color`.
+
+<Steps>
+  <Step title="Create the color theme">
+    Instantiate `SukiColorTheme` with your chosen colors. SukiUI automatically derives dark variants and background tints from the values you provide.
+
+    ```csharp
+    using Avalonia.Media;
+    using SukiUI.Models;
+
+    var purpleTheme = new SukiColorTheme("Purple", Colors.Purple, Colors.DarkBlue);
+    ```
+  </Step>
+
+  <Step title="Register the theme">
+    Call `AddColorTheme` to add it to the list of available themes. Themes must be registered before they can be switched to.
+
+    ```csharp
+    SukiTheme.GetInstance().AddColorTheme(purpleTheme);
+    ```
+
+    To register several at once, use `AddColorThemes`:
+
+    ```csharp
+    SukiTheme.GetInstance().AddColorThemes(new[]
+    {
+        new SukiColorTheme("Purple", Colors.Purple, Colors.DarkBlue),
+        new SukiColorTheme("Teal",   Colors.Teal,   Colors.DarkOrange),
+    });
+    ```
+  </Step>
+
+  <Step title="Switch to the custom theme">
+    Pass your `SukiColorTheme` instance directly to `ChangeColorTheme`:
+
+    ```csharp
+    SukiTheme.GetInstance().ChangeColorTheme(purpleTheme);
+    ```
+  </Step>
+</Steps>
+
+<Note>
+  Adding a theme with `AddColorTheme` does not automatically activate it. You must call `ChangeColorTheme` separately to make it active.
+</Note>
+
+## Inspecting all registered themes
+
+`SukiTheme.GetInstance().ColorThemes` returns the full list of registered themes (built-in and custom) as a read-only Avalonia list. You can iterate over it to build a theme picker UI:
+
+```csharp
+foreach (SukiColorTheme theme in SukiTheme.GetInstance().ColorThemes)
+{
+    Console.WriteLine($"{theme.DisplayName}: primary={theme.Primary}, accent={theme.Accent}");
+}
+```

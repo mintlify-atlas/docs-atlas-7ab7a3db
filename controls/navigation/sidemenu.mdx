@@ -1,0 +1,133 @@
+---
+title: "SukiSideMenu"
+description: "The primary navigation control in SukiUI, similar to NavigationView, with a collapsible sidebar, search, header and footer content areas, and page transitions."
+---
+
+`SukiSideMenu` is the main navigation control in SukiUI applications. It functions similarly to `NavigationView` in WinUI or other libraries: it renders a collapsible sidebar with navigation items on the left and the selected page's content on the right.
+
+Each navigation destination is represented by a `SukiSideMenuItem`, which holds the page title, an icon, and the page content.
+
+## Example
+
+```xml
+<suki:SukiSideMenu IsSearchEnabled="True">
+
+    <suki:SukiSideMenu.Items>
+
+        <suki:SukiSideMenuItem Header="Dashboard" Classes="Compact">
+            <suki:SukiSideMenuItem.Icon>
+                <PathIcon Data="{StaticResource HomeIconData}" />
+            </suki:SukiSideMenuItem.Icon>
+            <suki:SukiSideMenuItem.PageContent>
+                <views:DashboardView />
+            </suki:SukiSideMenuItem.PageContent>
+        </suki:SukiSideMenuItem>
+
+        <suki:SukiSideMenuItem Header="Settings" Classes="Compact">
+            <suki:SukiSideMenuItem.Icon>
+                <PathIcon Data="{StaticResource SettingsIconData}" />
+            </suki:SukiSideMenuItem.Icon>
+            <suki:SukiSideMenuItem.PageContent>
+                <views:SettingsView />
+            </suki:SukiSideMenuItem.PageContent>
+        </suki:SukiSideMenuItem>
+
+    </suki:SukiSideMenu.Items>
+
+    <suki:SukiSideMenu.HeaderContent>
+        <StackPanel Margin="12,8">
+            <TextBlock Text="My App" Classes="h3" />
+        </StackPanel>
+    </suki:SukiSideMenu.HeaderContent>
+
+    <suki:SukiSideMenu.FooterContent>
+        <Button Content="Sign out" HorizontalAlignment="Stretch" Margin="8" />
+    </suki:SukiSideMenu.FooterContent>
+
+</suki:SukiSideMenu>
+```
+
+<Warning>
+`SukiSideMenuItem.PageContent` must not be empty. Leaving it without any content will trigger a runtime exception similar to:
+
+```
+System.InvalidOperationException: The control SukiUI.Controls.SukiSideMenuItem already has a visual parent
+StackPanel while trying to add it as a child of ContentPresenter (Name = PART_FirstBufferControl).
+```
+</Warning>
+
+## Search
+
+Set `IsSearchEnabled="True"` to show a search box at the top of the sidebar. As the user types, the `SearchText` property updates and items whose `Header` doesn't match the search string are hidden automatically.
+
+```xml
+<suki:SukiSideMenu IsSearchEnabled="True">
+    <!-- Items -->
+</suki:SukiSideMenu>
+```
+
+## Compact Menu Items
+
+Apply the `Compact` class to a `SukiSideMenuItem` to reduce the padding of the navigation entry, useful when displaying many items.
+
+```xml
+<suki:SukiSideMenuItem Header="Reports" Classes="Compact">
+    <!-- Icon and PageContent -->
+</suki:SukiSideMenuItem>
+```
+
+## Sidebar Toggle
+
+The sidebar can be collapsed to an icon-only view. The toggle button is shown by default (`IsToggleButtonVisible="True"`). Control the initial state with `IsMenuExpanded` and the sidebar width when open with `OpenPaneLength` (minimum: 200).
+
+```xml
+<suki:SukiSideMenu
+    IsMenuExpanded="True"
+    OpenPaneLength="240"
+    IsToggleButtonVisible="True">
+    <!-- Items -->
+</suki:SukiSideMenu>
+```
+
+## Property Reference
+
+<ParamField path="IsSearchEnabled" type="bool" default="false">
+  Shows a search box at the top of the sidebar. Items are filtered by their `Header` value as the user types.
+</ParamField>
+
+<ParamField path="SearchText" type="string?">
+  The current text in the search box. Can be bound to for programmatic filtering.
+</ParamField>
+
+<ParamField path="IsMenuExpanded" type="bool" default="true">
+  Controls whether the sidebar is in its expanded (full-width) or collapsed (icon-only) state.
+</ParamField>
+
+<ParamField path="IsToggleButtonVisible" type="bool" default="true">
+  Shows or hides the sidebar toggle button.
+</ParamField>
+
+<ParamField path="OpenPaneLength" type="int" default="220">
+  The width of the sidebar when expanded. Must be at least 200.
+</ParamField>
+
+<ParamField path="HeaderContent" type="object?">
+  Content rendered at the top of the sidebar, above the navigation items.
+</ParamField>
+
+<ParamField path="FooterContent" type="object?">
+  Content rendered at the bottom of the sidebar, below the navigation items.
+</ParamField>
+
+<ParamField path="IsContentVisible" type="bool" default="true">
+  Shows or hides the main content area (right panel).
+</ParamField>
+
+<ParamField path="IsSelectedItemContentMovable" type="bool" default="true">
+  When `true`, the selected page content transitions with an animation when switching items.
+</ParamField>
+
+## See Also
+
+- [Demo: SukiUIDemoView.axaml](https://github.com/kikipoulet/SukiUI/blob/main/SukiUI.Demo/SukiUIDemoView.axaml)
+- [API: Controls/SukiSideMenu.axaml.cs](https://github.com/kikipoulet/SukiUI/blob/main/SukiUI/Controls/SukiSideMenu.axaml.cs)

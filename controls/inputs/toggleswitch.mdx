@@ -1,0 +1,52 @@
+---
+title: "ToggleSwitch"
+description: "SukiUI provides a fully animated ToggleSwitch that smoothly transitions its thumb between the on and off states using the theme's primary color."
+---
+
+The SukiUI `ToggleSwitch` is a styled replacement for the standard AvaloniaUI `ToggleSwitch`. It uses a smooth sliding animation for the thumb and fills the track with the primary color in the checked state.
+
+## Basic usage
+
+```xml
+<ToggleSwitch />
+```
+
+Bind to a boolean property in your view model:
+
+```xml
+<ToggleSwitch IsChecked="{Binding IsEnabled}" />
+```
+
+## With labels
+
+AvaloniaUI's `ToggleSwitch` natively supports `OnContent` and `OffContent` properties, which SukiUI renders as text labels next to the control:
+
+```xml
+<ToggleSwitch IsChecked="{Binding DarkModeEnabled}"
+              OnContent="Dark"
+              OffContent="Light" />
+```
+
+## Initial state
+
+Set `IsChecked="True"` to start the switch in the on position:
+
+```xml
+<ToggleSwitch IsChecked="True" />
+```
+
+## Disabled state
+
+```xml
+<ToggleSwitch IsEnabled="False" IsChecked="True" />
+```
+
+A disabled switch is rendered at the theme's `ThemeDisabledOpacity` value and does not respond to interaction.
+
+<Tip>
+The `ToggleSwitch` and `CheckBox` controls are demonstrated together in the SukiUI demo under **Controls → Toggles**. See the [demo source](https://github.com/kikipoulet/SukiUI/blob/main/SukiUI.Demo/Features/ControlsLibrary/TogglesView.axaml) for a side-by-side comparison.
+</Tip>
+
+## See also
+
+[Demo source — SukiUI.Demo/Features/ControlsLibrary/TogglesView.axaml](https://github.com/kikipoulet/SukiUI/blob/main/SukiUI.Demo/Features/ControlsLibrary/TogglesView.axaml)

@@ -1,0 +1,245 @@
+---
+title: "Dialogs"
+description: "Display modal dialogs anywhere in your SukiUI application using ISukiDialogManager and the fluent builder API."
+---
+
+SukiUI provides a host that can display modal dialogs at any level of your application. The recommended placement is `SukiWindow.Hosts`, which renders the dialog above all other content including the title bar.
+
+<Note>
+  `SukiWindow.Hosts` is only valid inside a `SukiWindow`. Declaring it in other views or pages has no effect.
+</Note>
+
+## Setup
+
+<Tabs>
+  <Tab title="MVVM">
+    <Steps>
+      <Step title="Add SukiDialogHost to your window">
+        Bind the `Manager` property to an `ISukiDialogManager` instance on your ViewModel:
+
+        ```xml
+        <!-- XMLNS definitions omitted for brevity -->
+        <suki:SukiWindow>
+            <suki:SukiWindow.Hosts>
+                <suki:SukiDialogHost Manager="{Binding DialogManager}" />
+            </suki:SukiWindow.Hosts>
+        </suki:SukiWindow>
+        ```
+      </Step>
+      <Step title="Expose the manager from your ViewModel">
+        Create and expose an `ISukiDialogManager` instance as a public property:
+
+        ```csharp
+        public class MainWindowViewModel
+        {
+            public ISukiDialogManager DialogManager { get; } = new SukiDialogManager();
+        }
+        ```
+      </Step>
+      <Step title="Display a dialog">
+        Call `CreateDialog()` on the manager from anywhere that has access to it:
+
+        ```csharp
+        public void DisplayDialog()
+        {
+            DialogManager.CreateDialog()
+                .WithTitle("Hello")
+                .WithContent("This is a modal dialog.")
+                .TryShow();
+        }
+        ```
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="Non-MVVM / Code-Behind">
+    <Steps>
+      <Step title="Add a named SukiDialogHost to your window">
+        Give the host a name so it can be referenced from code-behind:
+
+        ```xml
+        <!-- XMLNS definitions omitted for brevity -->
+        <suki:SukiWindow>
+            <suki:SukiWindow.Hosts>
+                <suki:SukiDialogHost Name="DialogHost" />
+            </suki:SukiWindow.Hosts>
+        </suki:SukiWindow>
+        ```
+      </Step>
+      <Step title="Create a static manager in code-behind">
+        Declare a static `ISukiDialogManager` and assign it to the host in the constructor:
+
+        ```csharp
+        public class MainWindow : SukiWindow
+        {
+            public static ISukiDialogManager DialogManager = new SukiDialogManager();
+
+            public MainWindow()
+            {
+                InitializeComponent();
+                DialogHost.Manager = DialogManager;
+            }
+        }
+        ```
+      </Step>
+      <Step title="Display a dialog from anywhere">
+        Reference the static manager to show dialogs from any class:
+
+        ```csharp
+        MainWindow.DialogManager.CreateDialog()
+            .WithTitle("Hello")
+            .WithContent("Modal dialog from code-behind.")
+            .TryShow();
+        ```
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+---
+
+## Displaying Dialogs
+
+Use the fluent builder to construct and display a dialog. Begin with `.CreateDialog()` on an `ISukiDialogManager` instance, chain configuration methods, then call `.TryShow()` to attempt to display it.
+
+`.TryShow()` returns `false` and does nothing if another dialog is already visible — only one dialog can be shown at a time.
+
+```csharp
+public void DisplayDialog()
+{
+    DialogManager.CreateDialog()
+        .WithTitle("Example Dialog")
+        .WithContent("The content of an example dialog can be seen here.")
+        .TryShow();
+}
+```
+
+<Tip>
+  `.WithContent()` accepts any object, including a ViewModel. If a ViewModel is passed, the corresponding View is located using the standard DataTemplate lookup strategy. Use `.WithViewModel()` when you need the dialog instance injected into your ViewModel via a `Func<ISukiDialog, object>` factory.
+</Tip>
+
+---
+
+## Dismissing Dialogs
+
+By default, dialogs have no built-in dismissal mechanism. There are two ways to add one.
+
+### By clicking the background
+
+Call `.Dismiss().ByClickingBackground()` to allow the user to close the dialog by clicking outside it:
+
+```csharp
+public void DisplayDialog()
+{
+    DialogManager.CreateDialog()
+        .WithTitle("Dismissible Dialog")
+        .WithContent("Click outside to close.")
+        .Dismiss().ByClickingBackground()
+        .TryShow();
+}
+```
+
+### Via action buttons
+
+Action buttons (see below) can be configured with `dismissOnClick: true` to close the dialog when pressed.
+
+---
+
+## Action Buttons
+
+Use `.WithActionButton()` to add buttons to the bottom of the dialog. Any number of buttons can be added by chaining multiple calls.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `content` | `object?` | Button label or content. |
+| `onClicked` | `Action<ISukiDialog>` | Callback invoked when the button is clicked. |
+| `dismissOnClick` | `bool` | If `true`, dismisses the dialog immediately on click. Defaults to `false`. |
+| `classes` | `params string[]` | CSS-style classes applied to the button. Defaults to `"Flat"`. |
+
+```csharp
+public void DisplayDialog()
+{
+    DialogManager.CreateDialog()
+        .WithTitle("Confirm Action")
+        .WithContent("Are you sure you want to continue?")
+        .WithActionButton("Cancel", _ => { }, dismissOnClick: true)
+        .WithActionButton("Confirm", _ => HandleConfirm(), dismissOnClick: true)
+        .TryShow();
+}
+```
+
+### Styled buttons
+
+Pass button class names as the final arguments to apply any of the standard [button styles](/controls/inputs/button). The following example uses the `Flat` style with the `Accent` colour modifier:
+
+```csharp
+public void DisplayDialog()
+{
+    DialogManager.CreateDialog()
+        .WithTitle("Important")
+        .WithContent("This action cannot be undone.")
+        .WithActionButton("Cancel", _ => { }, true, "Flat")
+        .WithActionButton("Delete", _ => HandleDelete(), true, "Flat", "Accent")
+        .TryShow();
+}
+```
+
+### Awaitable dialogs
+
+Use `.WithYesNoResult()` or `.WithOkResult()` together with `TryShowAsync()` to `await` the user's response:
+
+```csharp
+public async Task ConfirmAsync()
+{
+    bool result = await DialogManager.CreateDialog()
+        .WithTitle("Continue?")
+        .WithContent("Do you want to proceed with this operation?")
+        .WithYesNoResult("Yes", "No", "Flat")
+        .TryShowAsync();
+
+    if (result)
+        HandleConfirmed();
+}
+```
+
+---
+
+## MessageBox Styles
+
+Call `.OfType()` to apply a semantic MessageBox-style appearance with an icon that reflects the notification level. The dialog title and content remain fully customisable.
+
+```csharp
+// Information
+DialogManager.CreateDialog()
+    .OfType(NotificationType.Information)
+    .WithTitle("Information")
+    .WithContent("Your session will expire in 5 minutes.")
+    .WithActionButton("OK", _ => { }, true)
+    .TryShow();
+
+// Success
+DialogManager.CreateDialog()
+    .OfType(NotificationType.Success)
+    .WithTitle("Success")
+    .WithContent("Your changes have been saved.")
+    .WithActionButton("OK", _ => { }, true)
+    .TryShow();
+
+// Warning
+DialogManager.CreateDialog()
+    .OfType(NotificationType.Warning)
+    .WithTitle("Warning")
+    .WithContent("This will overwrite existing data.")
+    .WithActionButton("Cancel", _ => { }, true)
+    .WithActionButton("Continue", _ => HandleContinue(), true)
+    .TryShow();
+
+// Error
+DialogManager.CreateDialog()
+    .OfType(NotificationType.Error)
+    .WithTitle("Error")
+    .WithContent("Failed to connect to the server. Please check your network.")
+    .WithActionButton("Close", _ => { }, true)
+    .TryShow();
+```
+
+Available types: `NotificationType.Information`, `NotificationType.Success`, `NotificationType.Warning`, `NotificationType.Error`.

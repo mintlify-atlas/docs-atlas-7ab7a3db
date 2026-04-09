@@ -1,0 +1,284 @@
+---
+title: "Toasts"
+description: "Display non-blocking toast notifications anywhere in your SukiUI application using ISukiToastManager and the fluent builder API."
+---
+
+SukiUI provides a host that can display toasts at any level of your application. The recommended approach is to place it in `SukiWindow.Hosts`, which renders it above all other content including the title bar.
+
+<Note>
+  `SukiWindow.Hosts` is only valid inside a `SukiWindow`. Declaring it in other views or pages has no effect.
+</Note>
+
+## Setup
+
+<Tabs>
+  <Tab title="MVVM">
+    <Steps>
+      <Step title="Add SukiToastHost to your window">
+        Bind the `Manager` property to an `ISukiToastManager` instance on your ViewModel:
+
+        ```xml
+        <!-- XMLNS definitions omitted for brevity -->
+        <suki:SukiWindow>
+            <suki:SukiWindow.Hosts>
+                <suki:SukiToastHost Manager="{Binding ToastManager}" />
+            </suki:SukiWindow.Hosts>
+        </suki:SukiWindow>
+        ```
+      </Step>
+      <Step title="Expose the manager from your ViewModel">
+        Create and expose an `ISukiToastManager` instance as a public property:
+
+        ```csharp
+        public class MainWindowViewModel
+        {
+            public ISukiToastManager ToastManager { get; } = new SukiToastManager();
+        }
+        ```
+      </Step>
+      <Step title="Display a toast">
+        Call `CreateToast()` on the manager instance from anywhere that has access to it:
+
+        ```csharp
+        public void DisplayToast()
+        {
+            ToastManager.CreateToast()
+                .WithTitle("Hello")
+                .WithContent("This is a toast notification.")
+                .Queue();
+        }
+        ```
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="Non-MVVM / Code-Behind">
+    <Steps>
+      <Step title="Add a named SukiToastHost to your window">
+        Give the host a name so it can be referenced from code-behind:
+
+        ```xml
+        <!-- XMLNS definitions omitted for brevity -->
+        <suki:SukiWindow>
+            <suki:SukiWindow.Hosts>
+                <suki:SukiToastHost Name="ToastHost" />
+            </suki:SukiWindow.Hosts>
+        </suki:SukiWindow>
+        ```
+      </Step>
+      <Step title="Create a static manager in code-behind">
+        Declare a static `ISukiToastManager` and assign it to the host in the constructor:
+
+        ```csharp
+        public class MainWindow : SukiWindow
+        {
+            public static ISukiToastManager ToastManager = new SukiToastManager();
+
+            public MainWindow()
+            {
+                InitializeComponent();
+                ToastHost.Manager = ToastManager;
+            }
+        }
+        ```
+      </Step>
+      <Step title="Display a toast from anywhere">
+        Reference the static manager to queue toasts from any class:
+
+        ```csharp
+        MainWindow.ToastManager.CreateToast()
+            .WithTitle("Hello")
+            .WithContent("Notification from code-behind.")
+            .Queue();
+        ```
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+<Tip>
+  Set `MaxToasts` on `SukiToastHost` to cap how many toasts are visible simultaneously. When the limit is exceeded, the oldest toast is automatically dismissed to make room.
+</Tip>
+
+---
+
+## Displaying Toasts
+
+Use the fluent builder to construct and queue a toast. Begin with `.CreateToast()` on an `ISukiToastManager` instance, chain configuration methods, then call `.Queue()` to display it.
+
+```csharp
+public void DisplayToast()
+{
+    ToastManager.CreateToast()
+        .WithTitle("Example Toast")
+        .WithContent("The content of an example toast can be seen here.")
+        .Queue();
+}
+```
+
+---
+
+## Dismissing Toasts
+
+By default, toasts have no dismissal mechanism other than being pushed out by newer toasts when `MaxToasts` is exceeded. Use `.Dismiss()` to add one or more dismissal methods. Multiple dismissal methods can be combined on a single toast.
+
+```csharp
+public void DisplayToast()
+{
+    ToastManager.CreateToast()
+        .Dismiss().After(TimeSpan.FromSeconds(3))
+        .Dismiss().ByClicking()
+        .Queue();
+}
+```
+
+| Method | Description |
+|--------|-------------|
+| `.Dismiss().After(TimeSpan)` | Automatically dismisses the toast after the given duration. Hover over the toast to pause the timer (pass `interruptWhileHover: false` to disable this). |
+| `.Dismiss().ByClicking()` | Allows the user to dismiss the toast by clicking anywhere on it. |
+
+---
+
+## Interactions
+
+### Callbacks
+
+Two callbacks are available for reacting to user interaction:
+
+- **`.OnClicked(action)`** — Called whenever the body of the toast is clicked.
+- **`.OnDismissed(action)`** — Called when the toast is dismissed for any reason, including timeout, clicking, or a programmatic dismissal. The callback receives the toast and a `SukiToastDismissSource` value indicating the reason.
+
+```csharp
+public void DisplayToast()
+{
+    ToastManager.CreateToast()
+        .Dismiss().After(TimeSpan.FromSeconds(3))
+        .OnClicked(_ => Console.WriteLine("Toast clicked!"))
+        .OnDismissed((_, source) => Console.WriteLine($"Toast dismissed via {source}"))
+        .Queue();
+}
+```
+
+### Action Buttons
+
+Use `.WithActionButton()` to add one or more buttons to the toast. Set `dismissOnClick: true` to close the toast when that button is pressed.
+
+```csharp
+public void DisplayToast()
+{
+    ToastManager.CreateToast()
+        .WithTitle("Confirm")
+        .WithContent("Do you want to proceed?")
+        .Dismiss().After(TimeSpan.FromSeconds(5))
+        .WithActionButton("Dismiss", _ => { }, dismissOnClick: true)
+        .WithActionButton("Proceed", _ => HandleProceed(), dismissOnClick: true)
+        .Queue();
+}
+```
+
+The optional `style` parameter accepts a `SukiButtonStyles` value (default: `Flat`) to control button appearance.
+
+---
+
+## Toast Types
+
+Use `.OfType(NotificationType.X)` to apply a semantic style with a matching icon and accent colour.
+
+<Tabs>
+  <Tab title="Information">
+    ```csharp
+    ToastManager.CreateToast()
+        .OfType(NotificationType.Information)
+        .WithTitle("Information")
+        .WithContent("This is an informational message.")
+        .Queue();
+    ```
+  </Tab>
+  <Tab title="Success">
+    ```csharp
+    ToastManager.CreateToast()
+        .OfType(NotificationType.Success)
+        .WithTitle("Success")
+        .WithContent("The operation completed successfully.")
+        .Queue();
+    ```
+  </Tab>
+  <Tab title="Warning">
+    ```csharp
+    ToastManager.CreateToast()
+        .OfType(NotificationType.Warning)
+        .WithTitle("Warning")
+        .WithContent("Something may need your attention.")
+        .Queue();
+    ```
+  </Tab>
+  <Tab title="Error">
+    ```csharp
+    ToastManager.CreateToast()
+        .OfType(NotificationType.Error)
+        .WithTitle("Error")
+        .WithContent("An error occurred. Please try again.")
+        .Queue();
+    ```
+  </Tab>
+</Tabs>
+
+---
+
+## Loading Toast
+
+Pass `true` to `.WithLoadingState()` to show a loading indicator inside the toast. This is useful for representing in-progress operations.
+
+```csharp
+public void DisplayLoadingToast()
+{
+    ToastManager.CreateToast()
+        .WithTitle("Please Wait")
+        .WithContent("Loading data from server...")
+        .WithLoadingState(true)
+        .Queue();
+}
+```
+
+---
+
+## Complex Interaction Example
+
+The following example demonstrates a two-stage "Update Available" flow. The first toast offers a choice between updating now or later. Choosing **Update** dismisses the first toast and shows a second one with a live progress bar driven by a timer.
+
+```csharp
+private void ShowActionToast()
+{
+    toastManager.CreateToast()
+        .WithTitle("Update Available")
+        .WithContent("Information, Update v1.0.0.0 is Now Available.")
+        .WithActionButtonNormal("Later", _ => { }, true)
+        .WithActionButton("Update", _ => ShowUpdatingToast(), true)
+        .Queue();
+}
+
+private void ShowUpdatingToast()
+{
+    var progress = new ProgressBar() { Value = 0, ShowProgressText = true };
+    var toast = toastManager.CreateToast()
+        .WithTitle("Updating...")
+        .WithContent(progress)
+        .Queue();
+
+    var timer = new Timer(20);
+    timer.Elapsed += (_, _) =>
+    {
+        Dispatcher.UIThread.Invoke(() =>
+        {
+            progress.Value += 1;
+            if (progress.Value < 100) return;
+            timer.Dispose();
+            toastManager.Dismiss(toast);
+        });
+    };
+    timer.Start();
+}
+```
+
+<Note>
+  Any Avalonia control can be passed to `.WithContent()`. This includes custom UserControls and ViewModels — views are located using the standard DataTemplate lookup strategy.
+</Note>

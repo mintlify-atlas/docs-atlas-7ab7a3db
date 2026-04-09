@@ -1,0 +1,242 @@
+---
+title: "SukiWindow"
+description: "The root window control for SukiUI applications, replacing the standard Avalonia Window with themed backgrounds, a custom title bar, and host support for dialogs and toasts."
+---
+
+In SukiUI, `SukiWindow` replaces the standard Avalonia `Window` as the foundation for building desktop apps. It provides themed animated backgrounds, a customizable title bar with logo and menu support, and a `Hosts` layer for overlaying dialogs and toasts.
+
+![SukiWindow](https://github.com/user-attachments/assets/9be7f60b-d694-42dd-86ff-490ea80a3347)
+
+## Background Style
+
+SukiWindow offers five distinct background styles via the `BackgroundStyle` property. Backgrounds are generated dynamically to match the active color theme. In addition, custom SKSL shaders can be supplied via `BackgroundShaderFile` or `BackgroundShaderCode`.
+
+### Bubble
+
+The Bubble style renders animated floating circles that complement the glassmorphism design.
+
+```xml
+<suki:SukiWindow BackgroundStyle="Bubble">
+    <!-- Content -->
+</suki:SukiWindow>
+```
+
+<Tabs>
+  <Tab title="Dark">
+    ![Bubble Dark](https://github.com/user-attachments/assets/bdfeec4e-d0e7-4d7e-b075-b0616720acbd)
+  </Tab>
+  <Tab title="Light">
+    ![Bubble Light](https://github.com/user-attachments/assets/84dd83b4-be4f-4a0f-8c86-4d0c0e01e3ea)
+  </Tab>
+</Tabs>
+
+### Gradient
+
+The Gradient style renders a smooth radial gradient in the theme color.
+
+```xml
+<suki:SukiWindow BackgroundStyle="Gradient">
+    <!-- Content -->
+</suki:SukiWindow>
+```
+
+<Tabs>
+  <Tab title="Dark">
+    ![Gradient Dark](https://github.com/user-attachments/assets/491a5e69-7b2f-4db0-87d0-6925aa79dee4)
+  </Tab>
+  <Tab title="Light">
+    ![Gradient Light](https://github.com/user-attachments/assets/7ef7bfcb-3fcf-4993-9aa6-aa1616c8a2e9)
+  </Tab>
+</Tabs>
+
+### Flat
+
+The Flat style renders a plain solid background with no decoration.
+
+```xml
+<suki:SukiWindow BackgroundStyle="Flat">
+    <!-- Content -->
+</suki:SukiWindow>
+```
+
+<Tabs>
+  <Tab title="Dark">
+    ![Flat Dark](https://github.com/user-attachments/assets/2ff1b465-570b-4681-87b5-46fbc618e670)
+  </Tab>
+  <Tab title="Light">
+    ![Flat Light](https://github.com/user-attachments/assets/bdeee364-3bb6-4509-8427-f150569618a9)
+  </Tab>
+</Tabs>
+
+## Title Bar
+
+### Logo
+
+Place any control in `LogoContent` to display it on the left side of the title bar.
+
+```xml
+<suki:SukiWindow>
+    <suki:SukiWindow.LogoContent>
+        <Image Source="/Assets/logo.png" Width="20" Height="20" />
+    </suki:SukiWindow.LogoContent>
+</suki:SukiWindow>
+```
+
+### Menu
+
+Enable a native-style menu strip directly in the title bar by setting `IsMenuVisible="True"` and populating `MenuItems`.
+
+```xml
+<suki:SukiWindow IsMenuVisible="True">
+    <suki:SukiWindow.MenuItems>
+        <MenuItem Header="File">
+            <MenuItem Header="Open" />
+            <MenuItem Header="Exit" />
+        </MenuItem>
+        <MenuItem Header="Help">
+            <MenuItem Header="About" />
+        </MenuItem>
+    </suki:SukiWindow.MenuItems>
+</suki:SukiWindow>
+```
+
+### Right Title Bar Controls
+
+Add controls to the right side of the title bar (to the left of the window chrome buttons) using `RightWindowTitleBarControls`. Controls are laid out right-to-left.
+
+```xml
+<suki:SukiWindow>
+    <suki:SukiWindow.RightWindowTitleBarControls>
+        <Button Content="Settings" />
+        <ToggleButton Content="Theme" />
+    </suki:SukiWindow.RightWindowTitleBarControls>
+</suki:SukiWindow>
+```
+
+## Fullscreen & Title Bar Visibility
+
+Use `CanFullScreen="True"` to show the fullscreen toggle button in the title bar. Control what happens to the title bar when entering fullscreen with `TitleBarVisibilityOnFullScreen`.
+
+```xml
+<suki:SukiWindow
+    CanFullScreen="True"
+    TitleBarVisibilityOnFullScreen="AutoHidden">
+    <!-- Content -->
+</suki:SukiWindow>
+```
+
+### TitleBarVisibilityMode
+
+| Value | Behavior |
+|-------|----------|
+| `Unchanged` | Title bar visibility is kept as-is when entering fullscreen |
+| `Visible` | Title bar is always shown in fullscreen |
+| `Hidden` | Title bar is always hidden in fullscreen |
+| `AutoHidden` | Title bar hides after a delay; reappears when the cursor moves to the top of the screen (default) |
+
+<Note>
+When `AutoHidden` is active, `TitleBarAutoHideDelay` (default: 1000 ms) controls how long before the bar hides, and `TitleBarAutoShowDelay` (default: 300 ms) controls the delay before it re-appears.
+</Note>
+
+## Pinning
+
+Set `CanPin="True"` to show a pin button in the title bar. When activated, it sets `Topmost = true`, keeping the window above all other windows.
+
+```xml
+<suki:SukiWindow CanPin="True">
+    <!-- Content -->
+</suki:SukiWindow>
+```
+
+## Hosts
+
+`Hosts` are controls that render above all window content and fill the entire window area. Use this to add `SukiDialogHost` and `SukiToastHost` so that dialogs and toasts display over your UI.
+
+```xml
+<suki:SukiWindow>
+    <suki:SukiWindow.Hosts>
+        <suki:SukiDialogHost />
+        <suki:SukiToastHost />
+    </suki:SukiWindow.Hosts>
+    <!-- Content -->
+</suki:SukiWindow>
+```
+
+## Custom Shader Background
+
+For fully custom backgrounds, supply either a shader filename or inline SKSL code. See [Backgrounds](/theming/backgrounds) for full details on writing shaders.
+
+```xml
+<!-- Reference an embedded .sksl file by name (without extension) -->
+<suki:SukiWindow BackgroundShaderFile="MyShader">
+    <!-- Content -->
+</suki:SukiWindow>
+
+<!-- Inline SKSL shader code -->
+<suki:SukiWindow BackgroundShaderCode="vec4 main(vec2 fragCoord) {{ return vec4(iBase, iAlpha); }}" >
+    <!-- Content -->
+</suki:SukiWindow>
+```
+
+<Note>
+`BackgroundShaderFile` accepts the filename of an embedded `.sksl` resource **without the file extension**. SukiUI searches your application's embedded resources automatically. Set the build action to `EmbeddedResource` in your `.csproj`.
+</Note>
+
+## Property Reference
+
+<ParamField path="BackgroundStyle" type="SukiBackgroundStyle" default="Bubble">
+  The visual style of the window background. Options: `Gradient`, `GradientSoft`, `GradientDarker`, `Flat`, `Bubble`. See [Backgrounds](/theming/backgrounds) for descriptions of each.
+</ParamField>
+
+<ParamField path="BackgroundAnimationEnabled" type="bool" default="true">
+  Enables or disables the background animation (e.g., moving bubbles or gradient shifts).
+</ParamField>
+
+<ParamField path="BackgroundShaderFile" type="string?">
+  Filename (without extension) of an embedded `.sksl` resource to use as the background shader. SukiUI searches application embedded resources automatically.
+</ParamField>
+
+<ParamField path="BackgroundShaderCode" type="string?">
+  Inline SKSL source code for a custom shader background. Changing this property at runtime takes effect immediately.
+</ParamField>
+
+<ParamField path="LogoContent" type="Control?">
+  A control displayed in the left area of the title bar, typically an application logo or icon.
+</ParamField>
+
+<ParamField path="IsMenuVisible" type="bool" default="false">
+  Shows or hides the menu strip in the title bar.
+</ParamField>
+
+<ParamField path="MenuItems" type="AvaloniaList&lt;MenuItem&gt;">
+  The menu items displayed when `IsMenuVisible` is `true`.
+</ParamField>
+
+<ParamField path="RightWindowTitleBarControls" type="Controls">
+  Controls placed to the right of the title text, left of the window chrome buttons. Ordered right-to-left.
+</ParamField>
+
+<ParamField path="IsTitleBarVisible" type="bool" default="true">
+  Shows or hides the title bar.
+</ParamField>
+
+<ParamField path="TitleBarVisibilityOnFullScreen" type="TitleBarVisibilityMode" default="AutoHidden">
+  Controls title bar behavior when in fullscreen mode.
+</ParamField>
+
+<ParamField path="CanFullScreen" type="bool" default="false">
+  Shows the fullscreen toggle button in the title bar.
+</ParamField>
+
+<ParamField path="CanPin" type="bool" default="false">
+  Shows the pin (always-on-top) button in the title bar.
+</ParamField>
+
+<ParamField path="Hosts" type="Controls">
+  Controls rendered above all other content, filling the entire window. Used for dialog and toast hosts.
+</ParamField>
+
+## See Also
+
+- [Demo: SukiUIDemoView.axaml](https://github.com/kikipoulet/SukiUI/blob/main/SukiUI.Demo/SukiUIDemoView.axaml)
+- [API: Controls/SukiWindow.axaml.cs](https://github.com/kikipoulet/SukiUI/blob/main/SukiUI/Controls/SukiWindow.axaml.cs)

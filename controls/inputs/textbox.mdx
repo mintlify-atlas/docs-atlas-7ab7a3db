@@ -1,0 +1,146 @@
+---
+title: "TextBox"
+description: "SukiUI styles the standard AvaloniaUI TextBox with a glass-card background, floating watermark support, and a set of attached properties for prefix text, suffix units, clear and reset buttons, and inline validation."
+---
+
+SukiUI replaces the default AvaloniaUI `TextBox` template with a `GlassCard`-backed control. The border animates to the primary color on focus and to the error color when data validation fails.
+
+## Basic usage
+
+```xml
+<TextBox Text="Hello" />
+```
+
+A watermark (placeholder) is shown when the field is empty:
+
+```xml
+<TextBox Watermark="Enter your name" />
+```
+
+Enable the floating watermark to keep the label visible above the text after the user starts typing:
+
+```xml
+<TextBox Watermark="Email address"
+         UseFloatingWatermark="True" />
+```
+
+## TextBoxExtensions attached properties
+
+SukiUI ships `TextBoxExtensions` with four attached properties, accessible via the standard SukiUI namespace. Add it to your AXAML file if not already present:
+
+```xml
+xmlns:suki="https://github.com/kikipoulet/SukiUI"
+```
+
+### Prefix
+
+Renders a text label to the left of the editable area. Useful for URL schemes, currency symbols, or other fixed prefixes.
+
+```xml
+<TextBox suki:TextBoxExtensions.Prefix="https://"
+         Watermark="example.com" />
+```
+
+### Unit
+
+Renders a text label to the right of the editable area. Useful for measurement units.
+
+```xml
+<TextBox suki:TextBoxExtensions.Prefix="$"
+         suki:TextBoxExtensions.Unit="USD"
+         Watermark="Amount" />
+```
+
+### AddDeleteButton
+
+Adds an animated clear (×) button that appears on the right when the field contains text.
+
+```xml
+<TextBox suki:TextBoxExtensions.AddDeleteButton="True"
+         Text="Clear me" />
+```
+
+### ResetText
+
+Adds a reset button (↺) that restores the field to a specific default value.
+
+```xml
+<TextBox suki:TextBoxExtensions.ResetText="google"
+         suki:TextBoxExtensions.Prefix="https://"
+         suki:TextBoxExtensions.Unit=".com"
+         suki:TextBoxExtensions.AddDeleteButton="True"
+         Watermark="Url"
+         UseFloatingWatermark="True" />
+```
+
+## Combining extensions
+
+All four attached properties can be used together:
+
+```xml
+<TextBox suki:TextBoxExtensions.Prefix="https://"
+         suki:TextBoxExtensions.Unit=".com"
+         suki:TextBoxExtensions.ResetText="google"
+         suki:TextBoxExtensions.AddDeleteButton="True"
+         Text="mysite"
+         Watermark="Domain"
+         UseFloatingWatermark="True" />
+```
+
+## Validation / error state
+
+SukiUI automatically styles a `TextBox` with a red border when AvaloniaUI data validation raises an error. This works with any standard Avalonia data binding validation — for example via `INotifyDataErrorInfo` or `DataAnnotations` on your ViewModel.
+
+You can also trigger the error state programmatically from C# using the `Error` extension method:
+
+```csharp
+using SukiUI.Theme;
+
+MyTextBox.Error("Username is already taken");
+```
+
+<Note>
+`TextBoxExtensions.Error()` highlights the border in Indian Red, displays the message in a flyout positioned below the field, and plays a brief vibration animation.
+</Note>
+
+## Style classes
+
+| Class | Effect |
+|---|---|
+| `NoShadow` | Removes the glass background and border entirely — the field blends into its container. |
+| `FlatTextBox` | Replaces the glass background with the light border brush color and removes the border. |
+| `BottomBar` | Renders only a bottom border (1.5 px), similar to a Material Design text field. |
+| `clearButton` | Adds a built-in clear button (visible on focus when non-empty). Uses AvaloniaUI's `InnerRightContent` slot. |
+| `revealPasswordButton` | Adds a toggle button that reveals/hides `PasswordChar` content. |
+
+```xml
+<!-- Bottom-bar style -->
+<TextBox Classes="BottomBar" Watermark="Search" />
+
+<!-- Password field with reveal toggle -->
+<TextBox Classes="revealPasswordButton"
+         PasswordChar="*"
+         Watermark="Password" />
+```
+
+## Multi-line
+
+Standard AvaloniaUI properties for multi-line input work without any SukiUI-specific setup:
+
+```xml
+<TextBox AcceptsReturn="True"
+         TextWrapping="Wrap"
+         MinHeight="120" />
+```
+
+## Disabled state
+
+```xml
+<TextBox IsEnabled="False" Text="Read-only value" />
+```
+
+A disabled TextBox is rendered at the theme's `ThemeDisabledOpacity` value.
+
+## See also
+
+[Demo source — SukiUI.Demo/Features/Dashboard/DashboardView.axaml](https://github.com/kikipoulet/SukiUI/blob/main/SukiUI.Demo/Features/Dashboard/DashboardView.axaml)

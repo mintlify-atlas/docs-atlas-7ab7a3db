@@ -1,0 +1,89 @@
+---
+title: "GroupBox"
+description: "GroupBox is a SukiUI control that visually groups related content under a labelled header, separated by a thin divider line."
+---
+
+`SukiUI.Controls.GroupBox` extends AvaloniaUI's `HeaderedContentControl`. It renders a text header, a 1 px horizontal divider, and the child content below. The header text is styled using `SukiLowText` by default to keep it visually secondary to the content.
+
+## Namespace
+
+Add the SukiUI namespace to your AXAML file:
+
+```xml
+xmlns:suki="https://github.com/kikipoulet/SukiUI"
+```
+
+## Basic usage
+
+```xml
+<suki:GroupBox Header="Connection settings">
+    <StackPanel Spacing="8">
+        <TextBox Watermark="Host" />
+        <TextBox Watermark="Port" />
+    </StackPanel>
+</suki:GroupBox>
+```
+
+## String header
+
+The `Header` property accepts any object. A plain string is the most common usage:
+
+```xml
+<suki:GroupBox Header="Appearance">
+    <CheckBox Content="Enable animations" />
+</suki:GroupBox>
+```
+
+## Custom header template
+
+When you need more than a plain string — for example an icon alongside a label — use `HeaderTemplate`:
+
+```xml
+<suki:GroupBox>
+    <suki:GroupBox.HeaderTemplate>
+        <DataTemplate>
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <PathIcon Data="{x:Static suki:Icons.Settings}" />
+                <TextBlock Text="Advanced settings" FontWeight="SemiBold" />
+            </StackPanel>
+        </DataTemplate>
+    </suki:GroupBox.HeaderTemplate>
+
+    <StackPanel Spacing="8">
+        <ToggleSwitch OnContent="Enabled" OffContent="Disabled" />
+    </StackPanel>
+</suki:GroupBox>
+```
+
+## Inside a GlassCard
+
+`GroupBox` is commonly placed inside a `GlassCard` to give it the standard SukiUI surface appearance:
+
+```xml
+<suki:GlassCard>
+    <suki:GroupBox Header="Network">
+        <StackPanel Spacing="8">
+            <TextBox suki:TextBoxExtensions.Prefix="https://"
+                     Watermark="Server address" />
+            <TextBox Watermark="API key"
+                     PasswordChar="*" />
+        </StackPanel>
+    </suki:GroupBox>
+</suki:GlassCard>
+```
+
+## Styling
+
+`GroupBox` inherits from `HeaderedContentControl` and exposes the standard border and background properties:
+
+```xml
+<suki:GroupBox Header="Danger zone"
+               BorderBrush="{DynamicResource SukiDangerColor}"
+               BorderThickness="1">
+    <Button Classes="Danger" Content="Delete account" />
+</suki:GroupBox>
+```
+
+<Note>
+The divider line between the header and content is always rendered at 1 px using `SukiControlBorderBrush`. It cannot be hidden via a property — use a plain `Border` or `StackPanel` if you need a divider-free group.
+</Note>

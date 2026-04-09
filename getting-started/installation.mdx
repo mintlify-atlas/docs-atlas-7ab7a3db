@@ -1,0 +1,51 @@
+---
+title: "Installation"
+description: "Add SukiUI to your AvaloniaUI project via NuGet or CI artifacts."
+---
+
+<Note>
+  When this page was written, the latest Avalonia version was `11.2.0-beta1` with SukiUI version `6.0.0-beta8`. Ensure your Avalonia and SukiUI versions are compatible.
+</Note>
+
+<Steps>
+  <Step title="Prepare your project">
+    A default Avalonia template project includes `Avalonia.Themes.Fluent` as a dependency. SukiUI ships its own theme, so `Avalonia.Themes.Fluent` is no longer needed and should be removed from your project before installing SukiUI.
+
+    Remove it via your IDE's NuGet package manager or by editing your `.csproj`:
+
+    ```xml YourApp.csproj
+    <!-- Remove this line -->
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="..." />
+    ```
+  </Step>
+
+  <Step title="Install SukiUI via NuGet">
+    Run the following command in your project directory:
+
+    ```bash
+    dotnet add package SukiUI --version 6.0.0
+    ```
+
+    <Tip>
+      Visit [SukiUI on NuGet](https://www.nuget.org/packages/SukiUI) to browse all published versions and release notes.
+    </Tip>
+  </Step>
+</Steps>
+
+## Alternative: CI artifacts
+
+If you need the absolute latest unreleased build, you can download the compiled DLL directly from GitHub Actions instead of using NuGet.
+
+<AccordionGroup>
+  <Accordion title="Install from GitHub Actions artifact">
+    1. Visit the [SukiUI CI workflow](https://github.com/kikipoulet/SukiUI/actions/workflows/build.yml).
+    2. Select the most recent successful workflow run.
+    3. Download the artifact from the **Artifacts** section at the bottom of the run page.
+    4. Extract the archive and locate `SukiUI.dll`.
+    5. In your IDE, add a local assembly reference pointing to the extracted `SukiUI.dll`.
+
+    <Note>
+      CI builds are not versioned releases. They may contain breaking changes or unstable features. Use NuGet for production projects.
+    </Note>
+  </Accordion>
+</AccordionGroup>

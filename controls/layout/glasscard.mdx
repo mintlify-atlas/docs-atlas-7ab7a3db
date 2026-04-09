@@ -1,0 +1,138 @@
+---
+title: "GlassCard"
+description: "A card container with a glassmorphism visual style, supporting multiple appearance variants, interactivity, and composition animations."
+---
+
+`GlassCard` is a content container that applies a frosted-glass (glassmorphism) visual style. It is the primary card primitive in SukiUI and supports color variants, opaque and interactive modes, and built-in composition animations for smooth opacity and size transitions.
+
+<Tabs>
+  <Tab title="Dark">
+    ![GlassCard Dark](https://sleekshot.app/api/download/GfUS8bUZT6TQ)
+  </Tab>
+  <Tab title="Light">
+    ![GlassCard Light](https://sleekshot.app/api/download/M1xlZe6nmF72)
+  </Tab>
+</Tabs>
+
+```xml
+<GlassCard>
+    <!-- Content -->
+</GlassCard>
+```
+
+## Style Variants
+
+### Default
+
+The default style renders a semi-transparent card with a subtle border, integrating naturally with SukiUI's glass aesthetic.
+
+```xml
+<GlassCard>
+    <TextBlock Text="Default Card" />
+</GlassCard>
+```
+
+### Primary
+
+Renders the card with the theme's primary accent color applied to the background and border.
+
+![Primary](https://sleekshot.app/api/download/DC48QzG5R1XT)
+
+```xml
+<GlassCard Classes="Primary">
+    <TextBlock Text="Primary Card" />
+</GlassCard>
+```
+
+### Accent
+
+Renders the card with the theme's secondary accent color.
+
+![Accent](https://sleekshot.app/api/download/cclRRlzglCB8)
+
+```xml
+<GlassCard Classes="Accent">
+    <TextBlock Text="Accent Card" />
+</GlassCard>
+```
+
+### Opaque
+
+Setting `IsOpaque="True"` removes the transparency, rendering the card with a solid background. Useful for surfaces that need high contrast or sit on top of busy backgrounds.
+
+![Opaque](https://sleekshot.app/api/download/MW4zpqNj9FLK)
+
+```xml
+<GlassCard IsOpaque="True">
+    <TextBlock Text="Opaque Card" />
+</GlassCard>
+```
+
+### Interactive
+
+Setting `IsInteractive="True"` makes the card respond to pointer input with a press animation and optional `Command` execution on click.
+
+![Interactive](https://github.com/user-attachments/assets/0a1ba6ac-b3e0-4eb6-ad7e-f782820a0506)
+
+```xml
+<GlassCard IsInteractive="True" Command="{Binding OpenCommand}">
+    <TextBlock Text="Click me" />
+</GlassCard>
+```
+
+<Tip>
+`IsInteractive` cards also support `CommandParameter` for passing data to the bound command.
+</Tip>
+
+## Animations
+
+`GlassCard` uses Avalonia's `CompositionAnimations` to automatically animate `Opacity` and `Size` changes. This is enabled by default via the `IsAnimated` property. Disable it if you need instant layout updates without transitions.
+
+![Animated GlassCard](https://github.com/user-attachments/assets/b38d4ec2-067a-443c-ac20-65a2f6302920)
+
+```xml
+<!-- Animations on (default) -->
+<GlassCard IsAnimated="True">
+    <!-- Content -->
+</GlassCard>
+
+<!-- Animations off -->
+<GlassCard IsAnimated="False">
+    <!-- Content -->
+</GlassCard>
+```
+
+## Property Reference
+
+<ParamField path="IsOpaque" type="bool" default="false">
+  When `true`, the card renders with a fully opaque background instead of the default semi-transparent glass effect.
+</ParamField>
+
+<ParamField path="IsInteractive" type="bool" default="false">
+  When `true`, the card responds to pointer presses with a visual animation and executes the bound `Command` on click.
+</ParamField>
+
+<ParamField path="IsAnimated" type="bool" default="true">
+  When `true`, opacity changes and size changes of the card are animated via `CompositionAnimations`.
+</ParamField>
+
+<ParamField path="Command" type="ICommand?">
+  An `ICommand` executed when the card is clicked. Only active when `IsInteractive="True"`.
+</ParamField>
+
+<ParamField path="CommandParameter" type="object?">
+  The parameter passed to `Command` on execution.
+</ParamField>
+
+<ParamField path="CornerRadius" type="CornerRadius" default="20">
+  The corner radius of the card border. Defaults to `20` for a rounded glass look.
+</ParamField>
+
+<ParamField path="BorderThickness" type="Thickness" default="1">
+  The thickness of the card border.
+</ParamField>
+
+## See Also
+
+- [Demo: ControlsLibrary/CardsView.axaml](https://github.com/kikipoulet/SukiUI/blob/main/SukiUI.Demo/Features/ControlsLibrary/CardsView.axaml)
+- [API: Controls/GlassMorphism/GlassCard.axaml.cs](https://github.com/kikipoulet/SukiUI/blob/main/SukiUI/Controls/GlassMorphism/GlassCard.axaml.cs)

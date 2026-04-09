@@ -1,0 +1,104 @@
+{
+  "projectType": "frontend",
+  "projectName": "SukiUI",
+  "projectDescription": "A desktop UI theme library for AvaloniaUI with animated controls, light/dark themes, GPU-accelerated backgrounds, and a complete set of styled components.",
+  "theme": "willow",
+  "primaryColor": "#242b2c",
+  "lightColor": "#6a6a6d",
+  "darkColor": "#ebeaea",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "getting-started/installation",
+              "getting-started/launch"
+            ]
+          },
+          {
+            "group": "Theming",
+            "pages": [
+              "theming/overview",
+              "theming/color-themes",
+              "theming/backgrounds"
+            ]
+          },
+          {
+            "group": "Layout & Navigation",
+            "pages": [
+              "controls/layout/sukiwindow",
+              "controls/layout/glasscard",
+              "controls/layout/settingslayout",
+              "controls/navigation/sidemenu",
+              "controls/navigation/stackpage",
+              "controls/navigation/tabcontrol"
+            ]
+          },
+          {
+            "group": "Controls",
+            "pages": [
+              "controls/inputs/button",
+              "controls/inputs/textbox",
+              "controls/inputs/toggleswitch",
+              "controls/data/datagrid",
+              "controls/data/groupbox",
+              "controls/datetime/datepicker"
+            ]
+          },
+          {
+            "group": "Feedback & Overlays",
+            "pages": [
+              "hosts/toasts",
+              "hosts/dialogs",
+              "controls/progress/loading",
+              "controls/progress/stepper",
+              "controls/notification/infobar"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Light and dark theme support with runtime switching",
+    "GPU-accelerated animated backgrounds using SKSL shaders",
+    "Custom color themes with built-in and user-defined palettes",
+    "Glassmorphism design system with GlassCard controls",
+    "MVVM-friendly Toast and Dialog overlay system",
+    "SukiWindow with animated title bar and full-screen support",
+    "SukiSideMenu navigation with search and icon support",
+    "Animated progress controls: Loading, WaveProgress, CircleProgressBar, Stepper",
+    "Complete set of styled input controls (Button, TextBox, ComboBox, etc.)",
+    "PropertyGrid and SettingsLayout for structured settings UIs"
+  ],
+  "publicApiSurface": [
+    "SukiWindow",
+    "SukiTheme",
+    "SukiTheme.GetInstance()",
+    "SukiTheme.SwitchColorTheme()",
+    "SukiTheme.ChangeColorTheme(SukiColor)",
+    "SukiTheme.AddColorTheme(SukiColorTheme)",
+    "SukiColorTheme",
+    "ISukiDialogManager / SukiDialogManager",
+    "ISukiToastManager / SukiToastManager",
+    "SukiDialogHost",
+    "SukiToastHost",
+    "SukiSideMenu / SukiSideMenuItem",
+    "SukiBackground",
+    "SukiBackgroundStyle (Gradient, Flat, Bubble)",
+    "GlassCard",
+    "SettingsLayout / SettingsLayoutItem",
+    "BusyArea",
+    "CircleProgressBar",
+    "WaveProgress",
+    "Stepper / VerticalStepper",
+    "InfoBar / InfoBadge",
+    "SukiStackPage",
+    "SukiTransitioningContentControl",
+    "CodeView"
+  ]
+}

@@ -1,0 +1,110 @@
+---
+title: "Date & time controls"
+description: "SukiUI styles four AvaloniaUI date and time controls: DatePicker, TimePicker, Calendar, and CalendarDatePicker. All four use the active SukiUI theme colors and typography."
+---
+
+SukiUI applies theme styles to all four of AvaloniaUI's built-in date/time controls. No extra namespace or custom control is needed — simply use the standard AvaloniaUI control names and the SukiUI theme takes effect automatically.
+
+<Tabs>
+  <Tab title="DatePicker">
+    `DatePicker` lets the user select a date using spinning column selectors for day, month, and year.
+
+    ```xml
+    <DatePicker SelectedDate="{Binding SelectedDate}" />
+    ```
+
+    `SelectedDate` is of type `DateTimeOffset?`. Bind it to a nullable `DateTimeOffset` property in your view model:
+
+    ```csharp
+    public DateTimeOffset? SelectedDate { get; set; } = DateTimeOffset.Now;
+    ```
+
+    To restrict the selectable range use `MinYear` and `MaxYear`:
+
+    ```xml
+    <DatePicker SelectedDate="{Binding BirthDate}"
+                MinYear="1900"
+                MaxYear="2025" />
+    ```
+  </Tab>
+  <Tab title="TimePicker">
+    `TimePicker` lets the user select an hour and minute (and optionally seconds) using the same spinning column interface.
+
+    ```xml
+    <TimePicker SelectedTime="{Binding SelectedTime}" />
+    ```
+
+    `SelectedTime` is of type `TimeSpan?`:
+
+    ```csharp
+    public TimeSpan? SelectedTime { get; set; } = TimeSpan.FromHours(9);
+    ```
+
+    Show seconds by setting `SecondIncrement`:
+
+    ```xml
+    <TimePicker SelectedTime="{Binding SelectedTime}"
+                SecondIncrement="1" />
+    ```
+
+    Use `ClockIdentifier` to switch between 12-hour and 24-hour display:
+
+    ```xml
+    <TimePicker SelectedTime="{Binding SelectedTime}"
+                ClockIdentifier="24HourClock" />
+    ```
+  </Tab>
+  <Tab title="Calendar">
+    `Calendar` renders a full month grid for selecting one or more dates. SukiUI styles the selected day cell with the primary color and today's date with a subtle indicator.
+
+    ```xml
+    <Calendar SelectedDate="{Binding SelectedDate}" />
+    ```
+
+    `SelectedDate` is of type `DateTime?`:
+
+    ```csharp
+    public DateTime? SelectedDate { get; set; } = DateTime.Today;
+    ```
+
+    To allow the user to select a range, set `SelectionMode`:
+
+    ```xml
+    <Calendar SelectionMode="MultipleRange"
+              SelectedDates="{Binding SelectedDates}" />
+    ```
+
+    To restrict navigation, use `DisplayDateStart` and `DisplayDateEnd`:
+
+    ```xml
+    <Calendar SelectedDate="{Binding Appointment}"
+              DisplayDateStart="{Binding Today}"
+              DisplayDateEnd="{Binding MaxDate}" />
+    ```
+  </Tab>
+  <Tab title="CalendarDatePicker">
+    `CalendarDatePicker` combines a text field and a `Calendar` flyout — the user can type a date or pick one from the popup.
+
+    ```xml
+    <CalendarDatePicker SelectedDate="{Binding SelectedDate}"
+                        Watermark="Pick a date" />
+    ```
+
+    `SelectedDate` is of type `DateTime?`. The display format can be customised:
+
+    ```xml
+    <CalendarDatePicker SelectedDate="{Binding SelectedDate}"
+                        SelectedDateFormat="Custom"
+                        CustomDateFormatString="dd MMM yyyy"
+                        Watermark="dd MMM yyyy" />
+    ```
+
+    <Note>
+    `SelectedDateFormat` accepts `"Short"`, `"Long"`, or `"Custom"`. When set to `"Custom"` you must also provide a `CustomDateFormatString` using .NET date format specifiers.
+    </Note>
+  </Tab>
+</Tabs>
+
+## See also
+
+[Demo source — SukiUI.Demo/Features/ControlsLibrary/MiscView.axaml](https://github.com/kikipoulet/SukiUI/blob/main/SukiUI.Demo/Features/ControlsLibrary/MiscView.axaml)

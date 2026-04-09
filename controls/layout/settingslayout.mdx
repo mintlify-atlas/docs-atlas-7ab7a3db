@@ -1,0 +1,77 @@
+---
+title: "Settings Layout"
+description: "A responsive layout control for presenting grouped settings panels that adapts to the window width."
+---
+
+`SettingsLayout` is a layout container for presenting application settings in named groups. It automatically adapts its arrangement based on the window width — transitioning between single-column and multi-column layouts as the available space changes.
+
+Each group is represented by a `SettingsLayoutItem`, which has a `Header` label and a `Content` area for any controls.
+
+## Responsive Behavior
+
+The layout reflows when the window is resized. On wider windows, settings items are displayed side-by-side; on narrower windows they stack vertically.
+
+## Example
+
+```xml
+<suki:SettingsLayout>
+    <suki:SettingsLayout.Items>
+        <objectModel:ObservableCollection x:TypeArguments="suki:SettingsLayoutItem">
+
+            <suki:SettingsLayoutItem Header="Appearance">
+                <suki:SettingsLayoutItem.Content>
+                    <StackPanel Spacing="8">
+                        <ComboBox SelectedIndex="0">
+                            <ComboBoxItem Content="Dark" />
+                            <ComboBoxItem Content="Light" />
+                        </ComboBox>
+                        <CheckBox Content="Enable animations" IsChecked="True" />
+                    </StackPanel>
+                </suki:SettingsLayoutItem.Content>
+            </suki:SettingsLayoutItem>
+
+            <suki:SettingsLayoutItem Header="Notifications">
+                <suki:SettingsLayoutItem.Content>
+                    <StackPanel Spacing="8">
+                        <CheckBox Content="Enable notifications" IsChecked="True" />
+                        <CheckBox Content="Play sounds" IsChecked="False" />
+                    </StackPanel>
+                </suki:SettingsLayoutItem.Content>
+            </suki:SettingsLayoutItem>
+
+            <suki:SettingsLayoutItem Header="Advanced">
+                <suki:SettingsLayoutItem.Content>
+                    <StackPanel Spacing="8">
+                        <CheckBox Content="Developer mode" IsChecked="False" />
+                        <TextBox Watermark="Custom API endpoint" />
+                    </StackPanel>
+                </suki:SettingsLayoutItem.Content>
+            </suki:SettingsLayoutItem>
+
+        </objectModel:ObservableCollection>
+    </suki:SettingsLayout.Items>
+</suki:SettingsLayout>
+```
+
+<Note>
+The `objectModel` namespace refers to `System.Collections.ObjectModel`. Add it to your XAML namespaces:
+
+```xml
+xmlns:objectModel="clr-namespace:System.Collections.ObjectModel;assembly=System.Runtime"
+```
+</Note>
+
+## SettingsLayoutItem Properties
+
+<ParamField path="Header" type="string">
+  The label displayed above the settings group content.
+</ParamField>
+
+<ParamField path="Content" type="object">
+  The content of the settings section. Accepts any Avalonia control.
+</ParamField>
+
+## See Also
+
+- [Demo: Features/Theming/ThemingView.axaml](https://github.com/kikipoulet/SukiUI/blob/main/SukiUI.Demo/Features/Theming/ThemingView.axaml)
+- [API: Controls/SettingsLayout.axaml.cs](https://github.com/kikipoulet/SukiUI/blob/main/SukiUI/Controls/SettingsLayout.axaml.cs)

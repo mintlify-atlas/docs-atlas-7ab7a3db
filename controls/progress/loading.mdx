@@ -1,0 +1,132 @@
+---
+title: "Loading & progress"
+description: "SukiUI provides controls for communicating progress and loading state: Loading, ProgressBar, CircleProgressBar, WaveProgress, BusyArea, and CodeView."
+---
+
+SukiUI provides several controls for communicating progress and loading state to the user. Each control suits different UI contexts — from inline spinners to full circular indicators, animated wave fills, and overlay busy states.
+
+<Tabs>
+  <Tab title="Loading">
+    The `Loading` control renders an animated spinner using a GPU shader. It defaults to 50×50 pixels and uses the current `SukiPrimaryColor` unless a custom `Foreground` is set.
+
+    ```xml
+    <suki:Loading />
+    ```
+
+    ### Style variants
+
+    The `LoadingStyle` property controls the visual appearance of the animation. Three variants are available:
+
+    | Value | Description |
+    |-------|-------------|
+    | `Simple` | Default. A clean, minimal spinning arc. |
+    | `Glow` | A spinner with a glowing luminescence effect. |
+    | `Pellets` | A ring of animated dots. |
+
+    ```xml
+    <!-- Default spinner -->
+    <suki:Loading LoadingStyle="Simple" />
+
+    <!-- Glowing spinner -->
+    <suki:Loading LoadingStyle="Glow" />
+
+    <!-- Pellet ring -->
+    <suki:Loading LoadingStyle="Pellets" />
+    ```
+
+    A custom foreground colour can be applied via the `Foreground` property:
+
+    ```xml
+    <suki:Loading LoadingStyle="Glow" Foreground="{DynamicResource SukiAccentColor}" />
+    ```
+
+    <Note>
+      The `Loading` control uses hardware-accelerated composition. It may not render in design-time previewers that lack GPU support.
+    </Note>
+  </Tab>
+  <Tab title="ProgressBar">
+    SukiUI styles the standard Avalonia `ProgressBar` control. It supports both determinate and indeterminate modes and can optionally display the current percentage as text.
+
+    ```xml
+    <ProgressBar
+        Value="{Binding ProgressValue}"
+        IsIndeterminate="{Binding IsIndeterminate}"
+        ShowProgressText="{Binding IsTextVisible}" />
+    ```
+
+    | Property | Type | Description |
+    |----------|------|-------------|
+    | `Value` | `double` | Current progress value (0–100). |
+    | `IsIndeterminate` | `bool` | Animates continuously when `true`. |
+    | `ShowProgressText` | `bool` | Displays the percentage value inside the bar. |
+  </Tab>
+  <Tab title="CircleProgressBar">
+    `CircleProgressBar` renders a circular arc that fills as the value increases. It supports both determinate and indeterminate modes. The default size is 150×150 pixels.
+
+    ```xml
+    <suki:CircleProgressBar
+        Value="{Binding ProgressValue}"
+        IsIndeterminate="{Binding IsIndeterminate}"
+        StrokeWidth="11">
+        <TextBlock
+            Classes="h3"
+            Margin="0,2,0,0"
+            IsVisible="{Binding IsTextVisible}"
+            Text="{Binding ProgressValue, StringFormat={}{0:#0}%}" />
+    </suki:CircleProgressBar>
+    ```
+
+    Any content placed inside `CircleProgressBar` is centred within the circle. This makes it convenient to overlay a percentage label or icon.
+
+    | Property | Type | Default | Description |
+    |----------|------|---------|-------------|
+    | `Value` | `double` | `50` | Progress percentage (0–100). Internally mapped to degrees. |
+    | `StrokeWidth` | `double` | `10` | Thickness of the progress arc in pixels. |
+    | `IsIndeterminate` | `bool` | `false` | Animates continuously when `true`. |
+  </Tab>
+  <Tab title="WaveProgress">
+    `WaveProgress` renders a container that fills with an animated wave as the value increases. An optional text label can be shown inside the control to display the current percentage.
+
+    ```xml
+    <suki:WaveProgress
+        Value="{Binding ProgressValue}"
+        IsTextVisible="{Binding IsTextVisible}" />
+    ```
+
+    | Property | Type | Description |
+    |----------|------|-------------|
+    | `Value` | `double` | Current progress value (0–100). |
+    | `IsTextVisible` | `bool` | Shows or hides the percentage label inside the wave. |
+  </Tab>
+</Tabs>
+
+## BusyArea
+
+`BusyArea` is a content container that overlays an animated loading spinner on top of its child content when `IsBusy` is `true`. This is useful for sections of the UI that need to be blocked during background operations.
+
+```xml
+<suki:BusyArea IsBusy="{Binding IsLoading}"
+               BusyText="Loading data...">
+    <!-- Your normal content here -->
+    <DataGrid ItemsSource="{Binding Items}" />
+</suki:BusyArea>
+```
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `IsBusy` | `bool` | `false` | When `true`, overlays the content with a loading spinner and optional text. |
+| `BusyText` | `string?` | `null` | Optional text displayed below the spinner when busy. |
+
+## CodeView
+
+`CodeView` renders plain text as a styled code block with line numbers and a copy-to-clipboard button.
+
+```xml
+<suki:CodeView Text="{Binding SourceCode}" />
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `Text` | `string` | The code text to display. Line numbers are generated automatically. |
+
+The copy button appears in the top-right corner. Clicking it copies the full `Text` value to the clipboard and briefly shows a "Copied!" confirmation.

@@ -1,0 +1,79 @@
+---
+title: "SukiUI"
+description: "A desktop UI theme library for AvaloniaUI with animated controls, light/dark themes, GPU-accelerated backgrounds, and a complete set of styled components."
+---
+
+SukiUI is a modern UI theme library for [AvaloniaUI](https://avaloniaui.net/) that gives your desktop applications a polished, animated look out of the box. It provides GPU-accelerated backgrounds, smooth theme switching, glassmorphism components, and a rich set of styled controls — all designed for desktop use.
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/getting-started/installation">
+    Install SukiUI via NuGet and add it to your Avalonia project
+  </Card>
+  <Card title="Quick Launch" icon="rocket" href="/getting-started/launch">
+    Configure your App.axaml and set up SukiWindow as your main window
+  </Card>
+  <Card title="Theming" icon="palette" href="/theming/overview">
+    Switch between light/dark modes and customize color themes at runtime
+  </Card>
+  <Card title="Controls" icon="grid-2" href="/controls/inputs/button">
+    Browse the full set of styled controls — buttons, inputs, data grids, and more
+  </Card>
+</CardGroup>
+
+## Why SukiUI?
+
+SukiUI brings a cohesive, modern design language to Avalonia desktop apps without requiring you to style every control manually. Key highlights:
+
+- **Light & Dark themes** — Switch between modes at runtime with a single API call
+- **GPU-accelerated backgrounds** — Animated shader-based backgrounds (Bubble, Gradient, Waves, and more) using SKSL
+- **Glassmorphism design** — GlassCard and related components give your UI a layered, translucent feel
+- **Toast & Dialog system** — MVVM-friendly overlays that work from any layer of your application
+- **Rich animated controls** — Progress bars, steppers, loading spinners, and more with smooth animations
+
+## Get started in 3 steps
+
+<Steps>
+  <Step title="Install the NuGet package">
+    Add SukiUI to your Avalonia project:
+    ```bash
+    dotnet add package SukiUI --version 6.0.0
+    ```
+  </Step>
+  <Step title="Add SukiTheme to App.axaml">
+    Replace your existing theme with `SukiTheme`:
+    ```xml App.axaml
+    <Application xmlns:sukiUi="clr-namespace:SukiUI;assembly=SukiUI">
+      <Application.Styles>
+        <sukiUi:SukiTheme ThemeColor="Blue" />
+      </Application.Styles>
+    </Application>
+    ```
+  </Step>
+  <Step title="Use SukiWindow as your main window">
+    Replace `Window` with `SukiWindow` in your `MainWindow.axaml`:
+    ```xml MainWindow.axaml
+    <sukiUi:SukiWindow
+        x:Class="MyApp.MainWindow"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:sukiUi="clr-namespace:SukiUI.Controls;assembly=SukiUI">
+    </sukiUi:SukiWindow>
+    ```
+  </Step>
+</Steps>
+
+## Explore the library
+
+<CardGroup cols={2}>
+  <Card title="SukiWindow" icon="window" href="/controls/layout/sukiwindow">
+    The foundation of every SukiUI app — custom title bar, background styles, and more
+  </Card>
+  <Card title="Backgrounds" icon="image" href="/theming/backgrounds">
+    GPU-accelerated animated backgrounds with SKSL shader support
+  </Card>
+  <Card title="Toasts & Dialogs" icon="bell" href="/hosts/toasts">
+    MVVM-friendly notification and dialog overlay system
+  </Card>
+  <Card title="Navigation" icon="sidebar" href="/controls/navigation/sidemenu">
+    SukiSideMenu, StackPage, and TabControl for app navigation
+  </Card>
+</CardGroup>

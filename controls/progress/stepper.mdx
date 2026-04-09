@@ -1,0 +1,109 @@
+---
+title: "Stepper"
+description: "Guide users through multi-step tasks with SukiUI's horizontal Stepper and vertical VerticalStepper controls."
+---
+
+SukiUI provides two stepper controls for representing sequential multi-step processes. Both accept a list of step labels and an index indicating the current active step.
+
+## Stepper (horizontal)
+
+`Stepper` renders steps in a horizontal row with numbered circles and connecting separators. The active step is highlighted using the primary theme colour; preceding steps are marked as completed.
+
+### Basic usage
+
+Bind `Steps` to a collection of strings and `Index` to the zero-based index of the current active step:
+
+```xml
+<suki:Stepper
+    Index="{Binding StepIndex}"
+    Steps="{Binding Steps}" />
+```
+
+```csharp
+[ObservableProperty] private int _stepIndex = 1;
+
+public IEnumerable<string> Steps { get; } =
+    ["First Step", "Second Step", "Third Step"];
+```
+
+- Steps at or before `Index` receive the primary colour background and bold label text.
+- Steps after `Index` appear at reduced opacity and scaled down slightly.
+- The final step does not render a trailing chevron separator.
+
+### Alternative style
+
+Set `AlternativeStyle="True"` to use a connected-line variant where steps are joined by horizontal lines that fill with the primary colour as progress advances:
+
+```xml
+<suki:Stepper
+    AlternativeStyle="True"
+    Index="{Binding StepIndex}"
+    Steps="{Binding Steps}" />
+```
+
+In this variant, the active step indicator is filled with the primary colour, completed steps use a bordered circle with primary-coloured text, and upcoming steps use the control border colour.
+
+---
+
+## VerticalStepper
+
+`VerticalStepper` renders steps in a vertical list, suitable for sidebar wizards or tall forms. Each step item consists of a numbered circle, a title, and an optional description. Completed steps can optionally display a check mark instead of a number.
+
+### Basic usage with string labels
+
+Pass a collection of strings for simple step titles:
+
+```xml
+<suki:VerticalStepper
+    Index="{Binding StepIndex}"
+    Steps="{Binding Steps}" />
+```
+
+```csharp
+[ObservableProperty] private int _stepIndex = 0;
+
+public IEnumerable<string> Steps { get; } =
+    ["Account details", "Billing information", "Review & confirm"];
+```
+
+### Steps with descriptions
+
+Use `VerticalStepItem` objects to provide both a title and a description for each step:
+
+```xml
+<suki:VerticalStepper
+    Index="{Binding StepIndex}"
+    Steps="{Binding Steps}" />
+```
+
+```csharp
+public IEnumerable<VerticalStepItem> Steps { get; } =
+[
+    new VerticalStepItem("Account details", "Enter your name and email address."),
+    new VerticalStepItem("Billing information", "Provide your payment method."),
+    new VerticalStepItem("Review & confirm", "Check your order before submitting."),
+];
+```
+
+### Check mark on completed steps
+
+`ShowCheckMark` defaults to `true`. When enabled, completed steps (those before `Index`) display a check mark icon instead of their step number. Set it to `false` to always show the number:
+
+```xml
+<suki:VerticalStepper
+    Index="{Binding StepIndex}"
+    Steps="{Binding Steps}"
+    ShowCheckMark="False" />
+```
+
+### Step states
+
+The `VerticalStepper` control automatically manages step states based on the current `Index`:
+
+| State | Condition | Visual |
+|-------|-----------|--------|
+| Completed | `stepIndex < Index` | Primary-colour bordered circle; check mark if `ShowCheckMark` is true. |
+| Active | `stepIndex == Index` | Filled primary-colour circle with white number. |
+| Pending | `stepIndex > Index` | Border-coloured circle with muted appearance. |
+
+Connector lines between steps fill with the primary colour as each step is completed.

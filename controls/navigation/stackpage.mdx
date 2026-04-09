@@ -1,0 +1,94 @@
+---
+title: "SukiStackPage"
+description: "A stack-based navigation control that tracks page history and allows users to navigate back through breadcrumbs displayed in a header."
+---
+
+`SukiStackPage` provides stack-based navigation within a page or section. It tracks every object assigned to its `Content` property and displays breadcrumb headers at the top so users can navigate back to any previous level.
+
+Clicking an item in the breadcrumb header unwinds the stack to that page. Setting `Content` to an object that is already in the stack will automatically unwind to it rather than pushing a duplicate entry.
+
+## Example
+
+Bind `Content` to a view model property that you update as the user navigates deeper into your UI:
+
+```xml
+<controls:SukiStackPage Content="{Binding CurrentPage}" Limit="5" />
+```
+
+In your view model, push new pages by assigning to `CurrentPage`:
+
+```csharp
+// Navigate to a sub-page
+CurrentPage = new DetailViewModel();
+
+// Navigate deeper
+CurrentPage = new SubDetailViewModel();
+
+// Navigating back to an existing page in the stack unwinds automatically
+CurrentPage = detailViewModelInstance;
+```
+
+## Title Resolution
+
+`SukiStackPage` resolves the breadcrumb label for each page in the following order:
+
+1. If the content implements `ISukiStackPageTitleProvider`, the `Title` property is used.
+2. If the content is a `Control` with a `Name`, the control's `Name` is used.
+3. Otherwise, the type name of the content object is used.
+
+```csharp
+// Implement ISukiStackPageTitleProvider for a custom breadcrumb label
+public class DetailViewModel : ISukiStackPageTitleProvider
+{
+    public string Title => "Order Details";
+}
+```
+
+## Stack Limit
+
+The `Limit` property caps the number of pages retained in the stack (minimum: 2, default: 5). When the limit is reached, the oldest entry is shifted out to make room for the new page.
+
+```xml
+<controls:SukiStackPage Content="{Binding CurrentPage}" Limit="8" />
+```
+
+## Always Go Back to First Page
+
+Set `AlwaysGoBackToFirstPage="True"` to make all breadcrumb entries navigate directly back to the root page instead of to the intermediate page that was clicked.
+
+```xml
+<controls:SukiStackPage
+    Content="{Binding CurrentPage}"
+    AlwaysGoBackToFirstPage="True" />
+```
+
+## Property Reference
+
+<ParamField path="Content" type="object">
+  The currently displayed page. Assigning a new value pushes onto the stack. Assigning an object already in the stack unwinds to that entry.
+</ParamField>
+
+<ParamField path="Limit" type="int" default="5">
+  The maximum number of pages retained in the history stack. Must be at least 2. When exceeded, the oldest page is dropped.
+</ParamField>
+
+<ParamField path="AlwaysGoBackToFirstPage" type="bool" default="false">
+  When `true`, clicking any breadcrumb item navigates to the first (root) page rather than the clicked intermediate page.
+</ParamField>
+
+## SukiTransitioningContentControl
+
+`SukiTransitioningContentControl` is a lower-level control that animates between content objects with a crossfade transition. `SukiStackPage` and `SukiSideMenu` use it internally for page transitions.
+
+You can also use it directly when you need a simple fade-in/fade-out transition for arbitrary content:
+
+```xml
+<suki:SukiTransitioningContentControl Content="{Binding CurrentView}" />
+```
+
+Assign a new object to `Content` and the control will crossfade from the previous content to the new one over ~250 ms.
+
+## See Also
+
+- [Demo: ControlsLibrary/StackPage/StackPageView.axaml](https://github.com/kikipoulet/SukiUI/blob/main/SukiUI.Demo/Features/ControlsLibrary/StackPage/StackPageView.axaml)
+- [API: Controls/SukiStackPage.axaml.cs](https://github.com/kikipoulet/SukiUI/blob/main/SukiUI/Controls/SukiStackPage.axaml.cs)

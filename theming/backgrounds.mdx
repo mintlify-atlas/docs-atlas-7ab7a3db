@@ -1,0 +1,155 @@
+---
+title: "Backgrounds"
+description: "Use SukiUI's GPU-accelerated shader backgrounds with built-in styles or write your own SKSL shaders."
+---
+
+SukiUI includes a background renderer built on SkiaSharp's runtime shader effects. It draws complex, theme-aware backgrounds using the GPU and automatically responds to light/dark mode and color theme changes without any extra code.
+
+## SukiBackground control
+
+`SukiBackground` is an Avalonia `Control` that you can place anywhere in your visual tree. It is hit-test invisible by default so it does not intercept pointer events.
+
+```xml
+<suki:SukiBackground Style="Gradient" AnimationEnabled="False" />
+```
+
+When used inside `SukiWindow`, all background properties are exposed directly as `Background{Property}` properties on the window itself, so you typically do not need to host `SukiBackground` manually:
+
+```xml
+<suki:SukiWindow BackgroundStyle="Bubble"
+                 BackgroundAnimationEnabled="True"
+                 BackgroundTransitionsEnabled="True" />
+```
+
+When hosting `SukiBackground` in your own context, use the equivalent properties without the `Background` prefix (`Style`, `AnimationEnabled`, `TransitionsEnabled`, `TransitionTime`, `ShaderFile`, `ShaderCode`).
+
+## BackgroundStyle
+
+The `Style` property (or `BackgroundStyle` on `SukiWindow`) selects one of the built-in shader effects:
+
+| Value | Description |
+|-------|-------------|
+| `Gradient` | Animated color gradient — the default style |
+| `GradientSoft` | A softer, lower-contrast variant of the gradient |
+| `GradientDarker` | A darker, more saturated gradient variant |
+| `Flat` | Solid base background color — lowest rendering cost |
+| `Bubble` | Floating bubble overlay effect |
+
+Two additional shaders are bundled with SukiUI but not exposed as enum values. Access them by name via `ShaderFile` (see below):
+
+- `Cells` — cellular/voronoi noise pattern
+- `Waves` — flowing wave effect
+
+## BackgroundShaderFile
+
+Embed a `.sksl` file as an Avalonia embedded resource, then set `ShaderFile` (or `BackgroundShaderFile` on `SukiWindow`) to the filename **without the extension**. SukiUI searches your embedded resources automatically.
+
+```xml
+<!-- Set the embedded resource build action in your .csproj -->
+```
+
+```xml
+<suki:SukiWindow BackgroundShaderFile="MyShader" />
+```
+
+```xml
+<suki:SukiBackground ShaderFile="MyShader" />
+```
+
+To use one of the extra bundled shaders, reference its name directly:
+
+```xml
+<suki:SukiWindow BackgroundShaderFile="Waves" />
+```
+
+## BackgroundShaderCode
+
+Assign an SKSL string directly to `ShaderCode` (or `BackgroundShaderCode`). This skips the need for an embedded file and allows you to generate or mutate shader code at runtime — any change to the property is reflected immediately.
+
+```csharp
+string shaderCode = LoadShaderFromSomewhere();
+SukiTheme.GetInstance(); // ensure theme is initialised
+myBackground.ShaderCode = shaderCode;
+```
+
+You can also bind to this property in XAML.
+
+**Priority order** when multiple properties are set at once:
+
+1. `ShaderFile` / `BackgroundShaderFile`
+2. `ShaderCode` / `BackgroundShaderCode`
+3. `Style` / `BackgroundStyle`
+
+## Writing custom shaders (SKSL)
+
+Custom backgrounds are written in [SKSL](https://github.com/google/skia/blob/main/src/sksl/README.md), Skia's shading language. Your shader must define a `main` function that accepts a `vec2` fragment coordinate and returns a `vec4` color.
+
+SukiUI automatically injects the following uniforms into every shader before compilation:
+
+| Uniform | Type | Description |
+|---------|------|-------------|
+| `iTime` | `float` | Elapsed ticks since the background started rendering. Only advances when `AnimationEnabled` is `true`. |
+| `iDark` | `float` | `0.0` in light mode, `1.0` in dark mode. |
+| `iAlpha` | `float` | The opacity at which the background is rendered. Controlled mainly by the control's own `Opacity`. |
+| `iResolution` | `vec3` | Background dimensions in pixels. Only `x` and `y` are used; `z` is always `0`. |
+| `iPrimary` | `vec3` | Approximate RGB representation of the active primary theme color. |
+| `iAccent` | `vec3` | Approximate RGB representation of the active accent theme color. |
+| `iBase` | `vec3` | Pre-calculated background base color for the current theme (off-white in light mode). |
+
+All uniforms are updated every frame. Changes to the theme or light/dark mode are reflected automatically.
+
+**Simplest possible shader — the `Flat` style:**
+
+```glsl
+vec4 main(vec2 fragCoord) {
+    return vec4(iBase, iAlpha);
+}
+```
+
+**A shader that tints the background with the primary color in dark mode:**
+
+```glsl
+vec4 main(vec2 fragCoord) {
+    vec3 color = mix(iBase, iPrimary * 0.3, iDark * 0.5);
+    return vec4(color, iAlpha);
+}
+```
+
+**A time-based animated gradient using the primary and accent colors:**
+
+```glsl
+vec4 main(vec2 fragCoord) {
+    vec2 uv = fragCoord / iResolution.xy;
+    float wave = 0.5 + 0.5 * sin(uv.x * 6.28 + iTime * 0.5);
+    vec3 color = mix(iPrimary, iAccent, wave);
+    color = mix(iBase, color, 0.4);
+    return vec4(color, iAlpha);
+}
+```
+
+<Note>
+  When SkiaSharp cannot find usable hardware acceleration, SukiUI falls back to software rendering using the `Flat` style drawn on the CPU. Custom shaders and animated styles are not available in software fallback mode.
+</Note>
+
+## Transitions
+
+Enable `TransitionsEnabled` (`BackgroundTransitionsEnabled` on `SukiWindow`) to fade between background styles instead of switching instantly. The `iAlpha` uniform drives the crossfade.
+
+```xml
+<suki:SukiWindow BackgroundTransitionsEnabled="True"
+                 BackgroundTransitionTime="1.5" />
+```
+
+`TransitionTime` (`BackgroundTransitionTime`) sets the duration in seconds. The default is `1.0`.
+
+## Animation
+
+Set `AnimationEnabled` (`BackgroundAnimationEnabled` on `SukiWindow`) to `true` to advance `iTime` each frame and continuously repaint the background. All built-in styles except `Flat` support animation.
+
+```xml
+<suki:SukiWindow BackgroundAnimationEnabled="True" />
+```
+
+<Warning>
+  Enabling animation triggers a full invalidation and repaint of the entire [visual tree](https://docs.avaloniaui.net/docs/concepts/control-trees#visual-tree) on every frame. In testing, this causes approximately a **5% increase in CPU usage** and a **20% increase in GPU usage** at all times while animation is running. Only enable animation when the visual benefit justifies the cost.
+</Warning>
